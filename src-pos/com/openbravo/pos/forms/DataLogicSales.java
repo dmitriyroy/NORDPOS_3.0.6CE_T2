@@ -92,6 +92,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 new Field("ISCOMPLEX", Datas.BOOLEAN, Formats.BOOLEAN));
     }
 
+    @Override
     public void init(Session s){
         this.s = s;
     }
