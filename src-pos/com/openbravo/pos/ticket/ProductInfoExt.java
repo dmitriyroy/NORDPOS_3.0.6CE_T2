@@ -49,6 +49,7 @@ public class ProductInfoExt {
     protected double m_dPriceSell;
     protected BufferedImage m_Image;
     protected Properties attributes;
+    protected boolean m_bComplex;
     
     /** Creates new ProductInfo */
     public ProductInfoExt() {
@@ -65,6 +66,7 @@ public class ProductInfoExt {
         m_dPriceSell = 0.0;
         m_Image = null;
         attributes = new Properties();
+        m_bComplex = false;
     }
 
     public final String getID() {
@@ -105,6 +107,14 @@ public class ProductInfoExt {
 
     public final void setCom(boolean bValue) {
         m_bCom = bValue;
+    }
+    
+    public final boolean isComplex() {
+        return m_bComplex;
+    }
+
+    public final void setComplex(boolean bValue) {
+        m_bComplex = bValue;
     }
 
     public final boolean isScale() {
@@ -163,7 +173,7 @@ public class ProductInfoExt {
     }
 
     public String printPriceSellTax(TaxInfo tax) {
-        return Formats.CURRENCY.formatValue(new Double(getPriceSellTax(tax)));
+        return Formats.CURRENCY.formatValue(getPriceSellTax(tax));
     }
     
     public BufferedImage getImage() {
@@ -187,22 +197,25 @@ public class ProductInfoExt {
     }
 
     public static SerializerRead getSerializerRead() {
-        return new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-            ProductInfoExt product = new ProductInfoExt();
-            product.m_ID = dr.getString(1);
-            product.m_sRef = dr.getString(2);
-            product.m_sCode = dr.getString(3);
-            product.m_sName = dr.getString(4);
-            product.m_bCom = dr.getBoolean(5).booleanValue();
-            product.m_bScale = dr.getBoolean(6).booleanValue();
-            product.m_dPriceBuy = dr.getDouble(7).doubleValue();
-            product.m_dPriceSell = dr.getDouble(8).doubleValue();
-            product.taxcategoryid = dr.getString(9);
-            product.categoryid = dr.getString(10);
-            product.attributesetid = dr.getString(11);
-            product.m_Image = ImageUtils.readImage(dr.getBytes(12));
-            product.attributes = ImageUtils.readProperties(dr.getBytes(13));
-            return product;
+        return new SerializerRead() { 
+            @Override
+            public Object readValues(DataRead dr) throws BasicException {
+                ProductInfoExt product = new ProductInfoExt();
+                product.m_ID = dr.getString(1);
+                product.m_sRef = dr.getString(2);
+                product.m_sCode = dr.getString(3);
+                product.m_sName = dr.getString(4);
+                product.m_bCom = dr.getBoolean(5);
+                product.m_bScale = dr.getBoolean(6);
+                product.m_dPriceBuy = dr.getDouble(7);
+                product.m_dPriceSell = dr.getDouble(8);
+                product.taxcategoryid = dr.getString(9);
+                product.categoryid = dr.getString(10);
+                product.attributesetid = dr.getString(11);
+                product.m_Image = ImageUtils.readImage(dr.getBytes(12));
+                product.attributes = ImageUtils.readProperties(dr.getBytes(13));
+                product.m_bComplex = dr.getBoolean(14);
+                return product;
         }};
     }
 
