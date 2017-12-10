@@ -220,6 +220,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCatalogOrder.setText(null);
         txtAttributes.setText(null);
         reportlock = false;
+        jCheckBox_ComplexProduct.setSelected(false);
 
         // Los habilitados
         m_jRef.setEnabled(false);
@@ -240,6 +241,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jInCatalog.setEnabled(false);
         m_jCatalogOrder.setEnabled(false);
         txtAttributes.setEnabled(false);
+        jCheckBox_ComplexProduct.setEnabled(false);
 
         calculateMargin();
         calculatePriceSellTax();
@@ -352,7 +354,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         txtAttributes.setText(Formats.BYTEA.formatValue(myprod[16]));
         txtAttributes.setCaretPosition(0);
         reportlock = false;
-        jCheckBox_ComplexProduct.setSelected(((Boolean) myprod[5]));
+        jCheckBox_ComplexProduct.setSelected(((Boolean) myprod[17]));
 
         // Los habilitados
         m_jRef.setEnabled(false);
@@ -404,6 +406,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         txtAttributes.setText(Formats.BYTEA.formatValue(myprod[16]));
         txtAttributes.setCaretPosition(0);
         reportlock = false;
+        jCheckBox_ComplexProduct
 
         // Los habilitados
         m_jRef.setEnabled(true);
