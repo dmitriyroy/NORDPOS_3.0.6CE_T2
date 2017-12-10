@@ -5,18 +5,37 @@
  */
 package com.openbravo.pos.inventory;
 
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+
 
 /**
  *
  * @author AVM
  */
 public class ComplexProductsEditor extends javax.swing.JFrame {
+    
+    private final int FRAME_WIDTH;
+    private final int FRAME_HEIGHT;
 
     /**
      * Creates new form ComplexProductsEditor
      */
     public ComplexProductsEditor() {
+
         initComponents();
+        FRAME_WIDTH = 500;
+        FRAME_HEIGHT = 350;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int locationX = (screenSize.width - FRAME_WIDTH) / 2;
+        int locationY = (screenSize.height - FRAME_HEIGHT) / 2;
+        setTitle("Редактирование ингредиентов");
+        setBounds(new Rectangle(locationX, locationY, FRAME_WIDTH, FRAME_HEIGHT));        
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(FRAME_WIDTH,FRAME_HEIGHT);        
     }
 
     /**
@@ -38,6 +57,7 @@ public class ComplexProductsEditor extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setModalExclusionType(java.awt.Dialog.ModalExclusionType.TOOLKIT_EXCLUDE);
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Молоко", "Кофе", "Сахар" };
