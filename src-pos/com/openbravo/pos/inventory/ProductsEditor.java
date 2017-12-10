@@ -447,7 +447,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         myprod[4] = m_jComment.isSelected();
         myprod[5] = m_jScale.isSelected();
 //        myprod[6] = Formats.CURRENCY.parseValue(m_jPriceBuy.getText());
-        myprod[6] = Formats.CURRENCY.parseValue(calculateComplexPriceBy());
+        myprod[6] = Formats.CURRENCY.parseValue(calculateComplexPriceBy((String)m_id));
         myprod[7] = pricesell;
         myprod[8] = m_CategoryModel.getSelectedKey();
         myprod[9] = taxcatmodel.getSelectedKey();
@@ -463,11 +463,13 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         return myprod;
     }
 
-    public String calculateComplexPriceBy(){
+    public String calculateComplexPriceBy(String id) throws BasicException{
         if(jCheckBox_ComplexProduct.isSelected()){
-            if(m_dSales.getComplexPriceBy() != null){
-                return m_dSales.getComplexPriceBy().toString().replace(".",",");
+            String outValue = m_dSales.getComplexPriceBy(id).toString();
+            if(outValue != null){
+                outValue = outValue.replace(".",",");
             }
+            return outValue;
         }
         return m_jPriceBuy.getText();
     }
