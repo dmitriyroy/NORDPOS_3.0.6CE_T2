@@ -146,6 +146,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jstockcost.getDocument().addDocumentListener(dirty);
         m_jstockvolume.getDocument().addDocumentListener(dirty);
         m_jInCatalog.addActionListener(dirty);
+        jCheckBox_ComplexProduct.addActionListener(dirty);
         m_jCatalogOrder.getDocument().addDocumentListener(dirty);
         txtAttributes.getDocument().addDocumentListener(dirty);
 
@@ -776,6 +777,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jLabel3.setText(AppLocal.getIntString("label.prodpricebuy")); // NOI18N
 
         m_jPriceBuy.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        m_jPriceBuy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jPriceBuyActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText(AppLocal.getIntString("label.prodpricesell")); // NOI18N
 
@@ -1228,6 +1234,10 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         complexProductsEditor.setVisible(true);
         
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void m_jPriceBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jPriceBuyActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_m_jPriceBuyActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
