@@ -140,7 +140,14 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     
     public final List<IngredientInfo> getIngredients(String id) throws BasicException{
         return new PreparedSentence(s
-            , "SELECT ID, PRODUCT_ID, INGREDIENT_ID, INGREDIENT_WEIGHT FROM RECIPES WHERE PRODUCT_ID = ? "
+            ,"SELECT t1.ID,                                     " +
+             "       t1.PRODUCT_ID,                             " +
+             "	     t1.INGREDIENT_ID,                          " +
+             "	     t2.NAME            as \"INGREDIENT_NAME\", " +
+             "	     t1.INGREDIENT_WEIGHT                       " +
+             "  FROM RECIPES  as t1                             " +
+             "  JOIN PRODUCTS as t2 on t2.ID = t1.INGREDIENT_ID " +
+             " WHERE t1.PRODUCT_ID =  ?                         "
             , SerializerWriteString.INSTANCE
             , IngredientInfo.getSerializerRead()).list(id);
     }
