@@ -22,12 +22,14 @@ public class IngredientInfo implements Serializable {
     private String id;
     private String productId;
     private String ingredientId;
+    private String ingredientName;
     private Double ingredientWeight;
 
-    public IngredientInfo(String id, String productId, String ingredientId, Double ingredientWeight) {
+    public IngredientInfo(String id, String productId, String ingredientId, String ingredientName, Double ingredientWeight) {
         this.id = id;
         this.productId = productId;
         this.ingredientId = ingredientId;
+        this.ingredientName = ingredientName;
         this.ingredientWeight = ingredientWeight;
     }
 
@@ -55,6 +57,14 @@ public class IngredientInfo implements Serializable {
         this.ingredientId = ingredientId;
     }
 
+    public String getIngredientName() {
+        return ingredientName;
+    }
+
+    public void setIngredientName(String ingredientName) {
+        this.ingredientName = ingredientName;
+    }
+
     public Double getIngredientWeight() {
         return ingredientWeight;
     }
@@ -70,16 +80,15 @@ public class IngredientInfo implements Serializable {
                 return new IngredientInfo(dr.getString(1),
                         dr.getString(2),
                         dr.getString(3),
-                        dr.getDouble(4));
+                        dr.getString(4),
+                        dr.getDouble(5));
             }
         };
     }
 
     @Override
     public String toString() {
-        return "IngredientInfo{" + "id=" + id + ", productId=" + productId + ", ingredientId=" + ingredientId + ", ingredientWeight=" + ingredientWeight + '}';
+        return "IngredientInfo{" + "id=" + id + ", productId=" + productId + ", ingredientId=" + ingredientId + ", ingredientName=" + ingredientName + ", ingredientWeight=" + ingredientWeight + '}';
     }
-    
-    
-    
+
 }
