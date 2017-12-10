@@ -289,6 +289,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCatalogOrder.setText(null);
         txtAttributes.setText(null);
         reportlock = false;
+        jCheckBox_ComplexProduct.setSelected(false);
 
         // Los habilitados
         m_jRef.setEnabled(true);
@@ -309,6 +310,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jInCatalog.setEnabled(true);
         m_jCatalogOrder.setEnabled(false);
         txtAttributes.setEnabled(true);
+        jCheckBox_ComplexProduct.setEnabled(true);
 
         if (s_GenBarcode.equals("true")) {
             try {
