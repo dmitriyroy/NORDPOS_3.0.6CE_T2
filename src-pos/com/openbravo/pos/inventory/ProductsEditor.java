@@ -465,7 +465,9 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     public String calculateComplexPriceBy(){
         if(jCheckBox_ComplexProduct.isSelected()){
-            return m_dSales.getComplexPriceBy().toString();
+            if(m_dSales.getComplexPriceBy() != null){
+                return m_dSales.getComplexPriceBy().toString().replace(".",",");
+            }
         }
         return m_jPriceBuy.getText();
     }
