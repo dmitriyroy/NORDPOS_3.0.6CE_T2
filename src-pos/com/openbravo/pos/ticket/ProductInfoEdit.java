@@ -45,6 +45,8 @@ public class ProductInfoEdit {
     protected Double m_dStockCost;
     protected Double m_dStockVolume;
     protected Integer m_iCatalogOrder;
+
+    protected boolean m_bComplex;
     
     /** Creates a new instance of ProductInfoEdit */
     public ProductInfoEdit() {
@@ -63,6 +65,7 @@ public class ProductInfoEdit {
         m_dStockCost = null;
         m_dStockVolume = null;
         m_iCatalogOrder = null;            
+        m_bComplex = false;
     }
    
     public final String getID() {
@@ -139,6 +142,13 @@ public class ProductInfoEdit {
     }
     public void setImage(BufferedImage img) {
         m_Image = img;
+    }
+    
+    public final boolean isComplex() {            
+        return m_bComplex;
+    }
+    public final void setComplex(boolean bValue){            
+        m_bComplex = bValue;
     }
     
     @Override
