@@ -410,6 +410,9 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         txtAttributes.setCaretPosition(0);
         reportlock = false;
         jCheckBox_ComplexProduct.setSelected(((Boolean) myprod[17]));
+        m_jPriceBuy.setEditable(!(Boolean) myprod[17]);
+        jButton3.setEnabled((Boolean) myprod[17]);
+        jTable2.setEnabled((Boolean) myprod[17]);
 
         // Los habilitados
         m_jRef.setEnabled(true);
@@ -465,12 +468,20 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     public String calculateComplexPriceBy(String id) throws BasicException{
         if(jCheckBox_ComplexProduct.isSelected()){
+            m_jPriceBuy.setEditable(false);
+            jButton3.setEnabled(true);
+            jTable2.setEnabled(true);
             String outValue = m_dSales.getComplexPriceBy(id).toString();
             if(outValue != null){
                 outValue = outValue.replace(".",",");
+            }else{
+                outValue = "0";
             }
             return outValue;
         }
+        m_jPriceBuy.setEditable(true);
+        jButton3.setEnabled(false);
+        jTable2.setEnabled(false);
         return m_jPriceBuy.getText();
     }
     
@@ -980,7 +991,15 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             new Object [][] {
                 {"Кофе", "0,25"},
                 {"Сахар", "0,02"},
-                {"Молоко", "0,03"}
+                {"Молоко", "0,03"},
+                {"Молоко1", "0,03"},
+                {"Молоко2", "0,03"},
+                {"Молоко3", "0,03"},
+                {"Молоко4", "0,03"},
+                {"Молоко5", "0,03"},
+                {"Молоко6", "0,03"},
+                {"Молоко7", "0,03"},
+                {"Молоко8", "0,03"}
             },
             new String [] {
                 "Продукт", "Коэфициент"
@@ -1043,7 +1062,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             .addGroup(layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1)
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 607, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -1161,9 +1180,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         if (jCheckBox_ComplexProduct.isSelected()) {
             jButton3.setEnabled(true);
             jTable2.setEnabled(true);
+            m_jPriceBuy.setEditable(false);
         } else {
             jButton3.setEnabled(false);
             jTable2.setEnabled(false);
+            m_jPriceBuy.setEditable(true);
         }
     }//GEN-LAST:event_jCheckBox_ComplexProductActionPerformed
 
