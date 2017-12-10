@@ -438,7 +438,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     @Override
     public Object createValue() throws BasicException {
 
-        Object[] myprod = new Object[17];
+        Object[] myprod = new Object[18];
         myprod[0] = m_id;
         myprod[1] = m_jRef.getText();
         myprod[2] = m_jCode.getText();
@@ -456,6 +456,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         myprod[14] = m_jInCatalog.isSelected();
         myprod[15] = Formats.INT.parseValue(m_jCatalogOrder.getText());
         myprod[16] = Formats.BYTEA.parseValue(txtAttributes.getText());
+        myprod[17] = jCheckBox_ComplexProduct.isSelected();
 
         return myprod;
     }
@@ -590,6 +591,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             calculatePriceSellTax();
         }
 
+        @Override
         public void removeUpdate(DocumentEvent e) {
             if (!priceselllock) {
                 priceselllock = true;
