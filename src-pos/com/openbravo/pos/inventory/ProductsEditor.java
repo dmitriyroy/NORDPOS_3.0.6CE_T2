@@ -52,6 +52,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.krysalis.barcode4j.impl.upcean.*;
 
@@ -477,10 +478,20 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     
     public void setComplexData(String id) throws BasicException{
         List<IngredientInfo> ingredients = m_dSales.getIngredients(id);
+        jTable_ComplexData.setModel(new DefaultTableModel(new String [] {
+                    "ID","Продукт", "Коэфициент"
+                }, ingredients.size()));
+        jTable_ComplexData.getColumnModel().getColumn(0).setResizable(false);
+        jTable_ComplexData.getColumnModel().getColumn(0).setPreferredWidth(0);
+        jTable_ComplexData.getColumnModel().getColumn(0).setMinWidth(0);
+        jTable_ComplexData.getColumnModel().getColumn(0).setMaxWidth(0);
+        jTable_ComplexData.getColumnModel().getColumn(1).setResizable(false);
+        jTable_ComplexData.getColumnModel().getColumn(2).setResizable(false);
+        int row = 0;
         for (IngredientInfo ingredient : ingredients) {
-            int row = 0;
-            jTable_ComplexData.setValueAt(ingredient.getIngredientName(), row, 0);
-            jTable_ComplexData.setValueAt(ingredient.getIngredientWeight(), row, 1);
+            jTable_ComplexData.setValueAt(ingredient.getId(), row, 0);
+            jTable_ComplexData.setValueAt(ingredient.getIngredientName(), row, 1);
+            jTable_ComplexData.setValueAt(ingredient.getIngredientWeight(), row, 2);
             row++;
         }
     }
@@ -1007,23 +1018,23 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jLabel_ComplexProduct.setBounds(10, 170, 150, 20);
 
         jTable_ComplexData.setModel(new javax.swing.table.DefaultTableModel(
-            //    new Object [][] {
-                //        {"Кофе", "0,25"},
-                //        {"Сахар", "0,02"},
-                //        {"Молоко", "0,03"},
-                //        {"Молоко1", "0,03"},
-                //        {"Молоко2", "0,03"},
-                //        {"Молоко3", "0,03"},
-                //        {"Молоко4", "0,03"},
-                //        {"Молоко5", "0,03"},
-                //        {"Молоко6", "0,03"},
-                //        {"Молоко7", "0,03"},
+            new Object [][] {
+                //                {"Кофе", "0,25"},
+                //                {"Сахар", "0,02"},
+                //                {"Молоко", "0,03"},
+                //                {"Молоко1", "0,03"},
+                //                {"Молоко2", "0,03"},
+                //                {"Молоко3", "0,03"},
+                //                {"Молоко4", "0,03"},
+                //                {"Молоко5", "0,03"},
+                //                {"Молоко6", "0,03"},
+                //                {"Молоко7", "0,03"},
                 //        {"Молоко8", "0,03"}
-                //    }
-            null
+            }
+            //    null
             ,
             new String [] {
-                "Продукт", "Коэфициент"
+                //        "Продукт", "Коэфициент"
             }
         ));
         jTable_ComplexData.setEnabled(false);
