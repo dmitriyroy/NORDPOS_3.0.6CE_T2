@@ -38,6 +38,7 @@ import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.ticket.CategoryInfo;
 import com.openbravo.pos.ticket.IngredientInfo;
 import com.openbravo.pos.ticket.ProductInfoEdit;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
