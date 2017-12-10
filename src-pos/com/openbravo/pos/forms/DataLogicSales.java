@@ -127,7 +127,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     // team2
     public Double getComplexPriceBy(String id) throws BasicException {
         return (Double) new StaticSentence(s,
-                "SELECT COUNT(*) FROM PRODUCTS WHERE CATEGORY = ?",
+                "SELECT sum(ifnull(t3.PRICEBUY,0) * ifnull(t2.INGREDIENT_WEIGHT,0)) as \"PRICEBUY\" " +
+                "  FROM PRODUCTS as t1                                                              " +
+                "  join RECIPES  as t2 on t2.PRODUCT_ID = t1.ID                                     " +
+                "  join PRODUCTS as t3 on t3.ID         = t2.INGREDIENT_ID                          " +
+                " WHERE t1.ID = ?                                                                   ",
                 SerializerWriteString.INSTANCE,
                 SerializerReadDouble.INSTANCE).find(id);    }
 
