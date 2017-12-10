@@ -35,7 +35,8 @@ public class ComplexProductsEditor extends javax.swing.JFrame {
         setTitle("Редактирование ингредиентов");
         setBounds(new Rectangle(locationX, locationY, FRAME_WIDTH, FRAME_HEIGHT));        
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(FRAME_WIDTH,FRAME_HEIGHT);        
+        setSize(FRAME_WIDTH,FRAME_HEIGHT);      
+        setResizable(false);
     }
 
     /**
