@@ -766,11 +766,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new org.fife.ui.rtextarea.RTextScrollPane();
         txtAttributes = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
-        jPanel_Complex = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         m_jPrintLabel = new javax.swing.JButton();
         m_jVirtualKeyboard = new javax.swing.JButton();
 
@@ -1006,58 +1001,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         jTabbedPane1.addTab(AppLocal.getIntString("label.properties"), jPanel3); // NOI18N
 
-        jPanel_Complex.setVisible(false);
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"Кофе", "0,25"},
-                {"Сахар", "0,02"},
-                {"Молоко", "0,03"}
-            },
-            new String [] {
-                "Продукт", "Коэфициент"
-            }
-        ));
-        jScrollPane2.setViewportView(jTable1);
-
-        jButton1.setText("Удалить");
-
-        jButton2.setText("Добавить");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel_ComplexLayout = new javax.swing.GroupLayout(jPanel_Complex);
-        jPanel_Complex.setLayout(jPanel_ComplexLayout);
-        jPanel_ComplexLayout.setHorizontalGroup(
-            jPanel_ComplexLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel_ComplexLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel_ComplexLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2))
-                .addContainerGap(241, Short.MAX_VALUE))
-        );
-        jPanel_ComplexLayout.setVerticalGroup(
-            jPanel_ComplexLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel_ComplexLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel_ComplexLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(jPanel_ComplexLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-
-        jTabbedPane1.addTab("Комплексный", jPanel_Complex);
-
         m_jPrintLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/printer.png"))); // NOI18N
         m_jPrintLabel.setFocusPainted(false);
         m_jPrintLabel.setFocusable(false);
@@ -1127,17 +1070,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void m_jInCatalogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jInCatalogActionPerformed
-
-        if (m_jInCatalog.isSelected()) {
-            m_jCatalogOrder.setEnabled(true);
-        } else {
-            m_jCatalogOrder.setEnabled(false);
-            m_jCatalogOrder.setText(null);
-        }
-
-    }//GEN-LAST:event_m_jInCatalogActionPerformed
-
     private void m_jVirtualKeyboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jVirtualKeyboardActionPerformed
         m_oCurrentProductEdit.setID(m_id.toString());
         m_oCurrentProductEdit.setReference(m_jRef.getText());
@@ -1204,6 +1136,34 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         }
     }//GEN-LAST:event_m_jPrintLabelActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        //new ComplexProductEditor().setVisible(true);
+
+        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor();
+        complexProductsEditor.setVisible(true);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jCheckBox_ComplexProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_ComplexProductActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox_ComplexProduct.isSelected()) {
+            jButton3.setEnabled(true);
+            jTable2.setEnabled(true);
+        } else {
+            jButton3.setEnabled(false);
+            jTable2.setEnabled(false);
+        }
+    }//GEN-LAST:event_jCheckBox_ComplexProductActionPerformed
+
+    private void m_jInCatalogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jInCatalogActionPerformed
+
+        if (m_jInCatalog.isSelected()) {
+            m_jCatalogOrder.setEnabled(true);
+        } else {
+            m_jCatalogOrder.setEnabled(false);
+            m_jCatalogOrder.setText(null);
+        }
+    }//GEN-LAST:event_m_jInCatalogActionPerformed
+
     private void jButtonGenBarcodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenBarcodeActionPerformed
 
         String sCode = m_jCode.getText();
@@ -1222,37 +1182,12 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         }
     }//GEN-LAST:event_jButtonGenBarcodeActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jCheckBox_ComplexProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_ComplexProductActionPerformed
-        // TODO add your handling code here:
-        if (jCheckBox_ComplexProduct.isSelected()) {
-            jButton3.setEnabled(true);
-            jTable2.setEnabled(true);
-        } else {
-            jButton3.setEnabled(false);
-            jTable2.setEnabled(false);
-        }
-    }//GEN-LAST:event_jCheckBox_ComplexProductActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        //new ComplexProductEditor().setVisible(true);
-        
-        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor();
-        complexProductsEditor.setVisible(true);
-        
-    }//GEN-LAST:event_jButton3ActionPerformed
-
     private void m_jPriceBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jPriceBuyActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_m_jPriceBuyActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButtonGenBarcode;
     private javax.swing.JCheckBox jCheckBox_ComplexProduct;
@@ -1275,12 +1210,9 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel_Complex;
     private org.fife.ui.rtextarea.RTextScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JComboBox m_jAtt;
     private javax.swing.JTextField m_jCatalogOrder;
