@@ -395,6 +395,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jName.setText(Formats.STRING.formatValue(myprod[3]));
         m_jComment.setSelected(((Boolean) myprod[4]));
         m_jScale.setSelected(((Boolean) myprod[5]));
+//        m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
         m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
         setPriceSell(myprod[7]);
         m_CategoryModel.setSelectedKey(myprod[8]);
@@ -445,7 +446,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         myprod[3] = m_jName.getText();
         myprod[4] = m_jComment.isSelected();
         myprod[5] = m_jScale.isSelected();
-        myprod[6] = Formats.CURRENCY.parseValue(m_jPriceBuy.getText());
+//        myprod[6] = Formats.CURRENCY.parseValue(m_jPriceBuy.getText());
+        myprod[6] = Formats.CURRENCY.parseValue(calculateComplexPriceBy());
         myprod[7] = pricesell;
         myprod[8] = m_CategoryModel.getSelectedKey();
         myprod[9] = taxcatmodel.getSelectedKey();
@@ -461,6 +463,13 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         return myprod;
     }
 
+    public String calculateComplexPriceBy(){
+        if(jCheckBox_ComplexProduct.isSelected()){
+            return m_dSales.getComplexPriceBy().toString();
+        }
+        return m_jPriceBuy.getText();
+    }
+    
     @Override
     public Component getComponent() {
         return this;
