@@ -747,16 +747,15 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jLabel8 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jLabel14 = new javax.swing.JLabel();
+        jCheckBox_ComplexProduct = new javax.swing.JCheckBox();
+        jLabel_ComplexProduct = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jButton3 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new org.fife.ui.rtextarea.RTextScrollPane();
         txtAttributes = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel4.setVisible(false);
+        jPanel_Complex = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
@@ -899,17 +898,17 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jPanel2.add(m_jstockvolume);
         m_jstockvolume.setBounds(160, 50, 80, 20);
         jPanel2.add(m_jScale);
-        m_jScale.setBounds(160, 180, 80, 21);
+        m_jScale.setBounds(160, 150, 80, 20);
         jPanel2.add(m_jComment);
-        m_jComment.setBounds(160, 150, 80, 21);
+        m_jComment.setBounds(160, 130, 80, 20);
 
         jLabel18.setText(AppLocal.getIntString("label.prodorder")); // NOI18N
         jPanel2.add(jLabel18);
-        jLabel18.setBounds(10, 90, 120, 14);
+        jLabel18.setBounds(10, 80, 150, 14);
 
         m_jCatalogOrder.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jPanel2.add(m_jCatalogOrder);
-        m_jCatalogOrder.setBounds(160, 90, 80, 20);
+        m_jCatalogOrder.setBounds(160, 80, 80, 20);
 
         m_jInCatalog.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -917,32 +916,41 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             }
         });
         jPanel2.add(m_jInCatalog);
-        m_jInCatalog.setBounds(160, 120, 50, 21);
+        m_jInCatalog.setBounds(160, 110, 50, 20);
 
         jLabel8.setText(AppLocal.getIntString("label.prodincatalog")); // NOI18N
         jPanel2.add(jLabel8);
-        jLabel8.setBounds(10, 120, 150, 14);
+        jLabel8.setBounds(10, 110, 150, 20);
 
         jLabel11.setText(AppLocal.getIntString("label.prodaux")); // NOI18N
+        jLabel11.setMaximumSize(new java.awt.Dimension(107, 14));
+        jLabel11.setMinimumSize(new java.awt.Dimension(107, 14));
+        jLabel11.setPreferredSize(new java.awt.Dimension(107, 14));
         jPanel2.add(jLabel11);
-        jLabel11.setBounds(10, 150, 150, 14);
+        jLabel11.setBounds(10, 130, 150, 20);
 
         jLabel12.setText(AppLocal.getIntString("label.prodscale")); // NOI18N
+        jLabel12.setMaximumSize(new java.awt.Dimension(107, 14));
+        jLabel12.setMinimumSize(new java.awt.Dimension(107, 14));
+        jLabel12.setPreferredSize(new java.awt.Dimension(107, 14));
         jPanel2.add(jLabel12);
-        jLabel12.setBounds(10, 180, 150, 14);
+        jLabel12.setBounds(10, 150, 150, 20);
 
-        jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBox_ComplexProduct.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox2ActionPerformed(evt);
+                jCheckBox_ComplexProductActionPerformed(evt);
             }
         });
-        jPanel2.add(jCheckBox2);
-        jCheckBox2.setBounds(160, 210, 81, 23);
+        jPanel2.add(jCheckBox_ComplexProduct);
+        jCheckBox_ComplexProduct.setBounds(160, 170, 81, 20);
 
-        jLabel14.setText("Комплексный");
+        jLabel_ComplexProduct.setText(AppLocal.getIntString("label.complex"));
+        jLabel_ComplexProduct.setMaximumSize(new java.awt.Dimension(107, 14));
+        jLabel_ComplexProduct.setMinimumSize(new java.awt.Dimension(107, 14));
+        jLabel_ComplexProduct.setPreferredSize(new java.awt.Dimension(107, 14));
         //jLabel14.setText(AppLocal.getIntString("label.prodscale"));
-        jPanel2.add(jLabel14);
-        jLabel14.setBounds(10, 210, 90, 14);
+        jPanel2.add(jLabel_ComplexProduct);
+        jLabel_ComplexProduct.setBounds(10, 170, 150, 20);
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -958,7 +966,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jScrollPane3.setViewportView(jTable2);
 
         jPanel2.add(jScrollPane3);
-        jScrollPane3.setBounds(250, 10, 280, 190);
+        jScrollPane3.setBounds(250, 10, 280, 160);
 
         jButton3.setText("Изменить рецепт");
         jButton3.setEnabled(false);
@@ -968,7 +976,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             }
         });
         jPanel2.add(jButton3);
-        jButton3.setBounds(383, 210, 140, 23);
+        jButton3.setBounds(390, 180, 140, 23);
 
         jTabbedPane1.addTab(AppLocal.getIntString("label.prodstock"), jPanel2); // NOI18N
 
@@ -982,7 +990,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         jTabbedPane1.addTab(AppLocal.getIntString("label.properties"), jPanel3); // NOI18N
 
-        jPanel4.setName(""); // NOI18N
+        jPanel_Complex.setVisible(false);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -1005,34 +1013,34 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             }
         });
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel_ComplexLayout = new javax.swing.GroupLayout(jPanel_Complex);
+        jPanel_Complex.setLayout(jPanel_ComplexLayout);
+        jPanel_ComplexLayout.setHorizontalGroup(
+            jPanel_ComplexLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_ComplexLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_ComplexLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2))
                 .addContainerGap(241, Short.MAX_VALUE))
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        jPanel_ComplexLayout.setVerticalGroup(
+            jPanel_ComplexLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel_ComplexLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_ComplexLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 162, Short.MAX_VALUE)
+                    .addGroup(jPanel_ComplexLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("Комплексный", jPanel4);
+        jTabbedPane1.addTab("Комплексный", jPanel_Complex);
 
         m_jPrintLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/printer.png"))); // NOI18N
         m_jPrintLabel.setFocusPainted(false);
@@ -1202,16 +1210,16 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
+    private void jCheckBox_ComplexProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_ComplexProductActionPerformed
         // TODO add your handling code here:
-        if (jCheckBox2.isSelected()) {
+        if (jCheckBox_ComplexProduct.isSelected()) {
             jButton3.setEnabled(true);
             jTable2.setEnabled(true);
         } else {
             jButton3.setEnabled(false);
             jTable2.setEnabled(false);
         }
-    }//GEN-LAST:event_jCheckBox2ActionPerformed
+    }//GEN-LAST:event_jCheckBox_ComplexProductActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         //new ComplexProductEditor().setVisible(true);
@@ -1227,13 +1235,12 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButtonGenBarcode;
-    private javax.swing.JCheckBox jCheckBox2;
+    private javax.swing.JCheckBox jCheckBox_ComplexProduct;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
@@ -1244,10 +1251,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabel_ComplexProduct;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel_Complex;
     private org.fife.ui.rtextarea.RTextScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
