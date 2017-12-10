@@ -124,6 +124,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , ProductInfoExt.getSerializerRead()).find(sReference);
     }
 
+    // team2
+    public Double getComplexPriceBy() {
+        
+        return 777.77;
+    }
 
     // Catalogo de productos
     public final List<CategoryInfo> getRootCategories() throws BasicException {
