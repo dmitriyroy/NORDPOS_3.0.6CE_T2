@@ -35,6 +35,7 @@ import com.openbravo.pos.payment.PaymentInfo;
 import com.openbravo.pos.payment.PaymentInfoTicket;
 import com.openbravo.pos.ticket.CategoryInfo;
 import com.openbravo.pos.ticket.FindTicketsInfo;
+import com.openbravo.pos.ticket.IngredientInfo;
 import com.openbravo.pos.ticket.ProductInfoExt;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
@@ -42,6 +43,7 @@ import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -125,7 +127,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     // team2
-    public Double getComplexPriceBy(String id) throws BasicException {
+    public final Double getComplexPriceBy(String id) throws BasicException {
         return (Double) new StaticSentence(s,
                 "SELECT sum(ifnull(t3.PRICEBUY,0) * ifnull(t2.INGREDIENT_WEIGHT,0)) as \"PRICEBUY\" " +
                 "  FROM PRODUCTS as t1                                                              " +
@@ -133,7 +135,15 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 "  join PRODUCTS as t3 on t3.ID         = t2.INGREDIENT_ID                          " +
                 " WHERE t1.ID = ?                                                                   ",
                 SerializerWriteString.INSTANCE,
-                SerializerReadDouble.INSTANCE).find(id);    }
+                SerializerReadDouble.INSTANCE).find(id);
+    }
+    
+    public final List<IngredientInfo> getIngredients(String id) throws BasicException{
+        return new PreparedSentence(s
+            , "SELECT ID, PRODUCT_ID, INGREDIENT_ID, INGREDIENT_WEIGHT FROM RECIPES WHERE PRODUCT_ID = ? "
+            , SerializerWriteString.INSTANCE
+            , IngredientInfo.getSerializerRead()).list(id);
+    }
 
     // Catalogo de productos
     public final List<CategoryInfo> getRootCategories() throws BasicException {
