@@ -125,10 +125,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     // team2
-    public Double getComplexPriceBy() {
-        
-        return 777.77;
-    }
+    public Double getComplexPriceBy(String id) throws BasicException {
+        return (Double) new StaticSentence(s,
+                "SELECT COUNT(*) FROM PRODUCTS WHERE CATEGORY = ?",
+                SerializerWriteString.INSTANCE,
+                SerializerReadDouble.INSTANCE).find(id);    }
 
     // Catalogo de productos
     public final List<CategoryInfo> getRootCategories() throws BasicException {
