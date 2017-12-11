@@ -7,31 +7,32 @@ package com.openbravo.pos.inventory;
 
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import javax.swing.JDialog;
 
 
 /**
  *
  * @author AVM
  */
-public class ComplexProductsEditor extends javax.swing.JFrame {
+//public class ComplexProductsEditor extends javax.swing.JFrame {
+public class ComplexProductsEditor extends JDialog {
     
-    private final int FRAME_WIDTH;
-    private final int FRAME_HEIGHT;
+    private int FRAME_WIDTH = 500;
+    private int FRAME_HEIGHT = 350;
 
-    /**
-     * Creates new form ComplexProductsEditor
-     */
     public ComplexProductsEditor() {
-
+        
         initComponents();
         FRAME_WIDTH = 500;
         FRAME_HEIGHT = 350;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int locationX = (screenSize.width - FRAME_WIDTH) / 2;
         int locationY = (screenSize.height - FRAME_HEIGHT) / 2;
+        setModal(true);
         setTitle("Редактирование ингредиентов");
         setBounds(new Rectangle(locationX, locationY, FRAME_WIDTH, FRAME_HEIGHT));        
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
