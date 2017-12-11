@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -137,7 +138,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 SerializerWriteString.INSTANCE,
                 SerializerReadDouble.INSTANCE).find(id);
     }
-    
     public final List<IngredientInfo> getIngredients(String id) throws BasicException{
         return new PreparedSentence(s
             ,"SELECT t1.ID,                                     " +
@@ -150,6 +150,18 @@ public class DataLogicSales extends BeanFactoryDataSingle {
              " WHERE t1.PRODUCT_ID =  ?                         "
             , SerializerWriteString.INSTANCE
             , IngredientInfo.getSerializerRead()).list(id);
+    }
+    public final SentenceList getAllProductList(){
+        return new StaticSentence(s
+            , "SELECT ID, NAME FROM PRODUCTS"
+            , null
+            , new SerializerRead() { 
+                @Override
+                public Object readValues(DataRead dr) throws BasicException {
+                    return new TaxCategoryInfo(
+                            dr.getString(1),
+                            dr.getString(2));
+            }});
     }
 
     // Catalogo de productos

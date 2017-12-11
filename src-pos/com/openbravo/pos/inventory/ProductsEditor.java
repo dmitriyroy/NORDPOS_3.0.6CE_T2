@@ -38,7 +38,6 @@ import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.ticket.CategoryInfo;
 import com.openbravo.pos.ticket.IngredientInfo;
 import com.openbravo.pos.ticket.ProductInfoEdit;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -107,6 +107,14 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     public ProductsEditor(AppView app, DataLogicSales dlSales, DirtyManager dirty) {
         initComponents();
+        
+        jTable_ComplexData = new MJTable();
+        jTable_ComplexData.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {}, new String [] {}
+        ));
+        jTable_ComplexData.setEnabled(false);
+        jScrollPane3.setViewportView(jTable_ComplexData);
+        
         m_App = app;
         m_dSales = dlSales;
 
@@ -497,6 +505,16 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         }
     }
 
+    class MJTable extends JTable {
+        public MJTable() {
+            super();
+        }
+            @Override
+            public boolean isCellEditable(int row, int column)
+            {
+              return false;
+            }
+        }  
     public String calculateComplexPriceBy(String id) throws BasicException{
         if(jCheckBox_ComplexProduct.isSelected()){
             m_jPriceBuy.setEditable(false);
@@ -1203,8 +1221,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         //new ComplexProductEditor().setVisible(true);
-
-        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor();
+        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales,m_id);
         complexProductsEditor.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -1252,7 +1269,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     private void m_jPriceBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jPriceBuyActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_m_jPriceBuyActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton3;

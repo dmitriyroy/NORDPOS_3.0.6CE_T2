@@ -5,12 +5,17 @@
  */
 package com.openbravo.pos.inventory;
 
-import java.awt.Dialog;
+import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.SentenceList;
+import com.openbravo.pos.forms.DataLogicSales;
+import com.openbravo.pos.ticket.IngredientInfo;
 import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JDialog;
 
 
@@ -21,10 +26,11 @@ import javax.swing.JDialog;
 //public class ComplexProductsEditor extends javax.swing.JFrame {
 public class ComplexProductsEditor extends JDialog {
     
-    private int FRAME_WIDTH = 500;
-    private int FRAME_HEIGHT = 350;
+    private final int FRAME_WIDTH;
+    private final int FRAME_HEIGHT;
+    private DataLogicSales m_dSales;
 
-    public ComplexProductsEditor() {
+    public ComplexProductsEditor(DataLogicSales m_dSales, Object id){
         
         initComponents();
         FRAME_WIDTH = 500;
@@ -38,6 +44,50 @@ public class ComplexProductsEditor extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(FRAME_WIDTH,FRAME_HEIGHT);      
         setResizable(false);
+        
+        
+        // добавить вывод данных в таблицы
+        this.m_dSales = m_dSales;
+        List<IngredientInfo> ingredients = new ArrayList<>();
+        
+        try {
+            ingredients = m_dSales.getIngredients((String)id);
+        } catch (BasicException ex) {
+            Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        final String[] list1ModelData = new String[ingredients.size()];
+        for (int i = 0; i < ingredients.size(); i++) {
+            list1ModelData[i] = ingredients.get(i).getIngredientName();
+        }
+        
+        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+            @Override
+            public int getSize() { return list1ModelData.length; }
+            @Override
+            public String getElementAt(int i) { return list1ModelData[i]; }
+        });
+
+        
+//        SentenceList allProductsList = m_dSales.getAllProductList();
+//        List l1 = new ArrayList<>();
+//        try {
+//            l1 = allProductsList.list();
+//        } catch (BasicException ex) {
+//            Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        
+//        final String[] list2ModelData = new String[l1.size()];
+//        for (int i = 0; i < l1.size(); i++) {
+//            list2ModelData[i] = l1.get(i);
+//        }
+//        
+//        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+//            @Override
+//            public int getSize() { return list1ModelData.length; }
+//            @Override
+//            public String getElementAt(int i) { return list1ModelData[i]; }
+//        });    
     }
 
     /**
@@ -131,34 +181,36 @@ public class ComplexProductsEditor extends JDialog {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ComplexProductsEditor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new ComplexProductsEditor().setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        
+//            Object id = this.id1;
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(ComplexProductsEditor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//        
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                new ComplexProductsEditor(id).setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
