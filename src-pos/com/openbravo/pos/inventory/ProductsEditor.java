@@ -509,12 +509,12 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         public MJTable() {
             super();
         }
-            @Override
-            public boolean isCellEditable(int row, int column)
-            {
-              return false;
-            }
-        }  
+        @Override
+        public boolean isCellEditable(int row, int column)
+        {
+          return false;
+        }
+    }  
     public String calculateComplexPriceBy(String id) throws BasicException{
         if(jCheckBox_ComplexProduct.isSelected()){
             m_jPriceBuy.setEditable(false);
@@ -1221,7 +1221,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         //new ComplexProductEditor().setVisible(true);
-        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales,m_id);
+        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(/*m_dSales,m_id*/);
         complexProductsEditor.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
