@@ -157,21 +157,21 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new PreparedSentence(s
             , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS"
             , SerializerWriteString.INSTANCE
-            , IngredientInfo.getSerializerRead()).list();
+            , ProductMini.getSerializerRead()).list();
     }
     
     public final List<ProductMini> getAllProductNameComplex() throws BasicException{
         return new PreparedSentence(s
             , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = true "
             , SerializerWriteString.INSTANCE
-            , IngredientInfo.getSerializerRead()).list();
+            , ProductMini.getSerializerRead()).list();
     }
     
     public final List<ProductMini> getAllProductNameNonComplex() throws BasicException{
         return new PreparedSentence(s
             , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = false "
             , SerializerWriteString.INSTANCE
-            , IngredientInfo.getSerializerRead()).list();
+            , ProductMini.getSerializerRead()).list();
     }
 
     // Catalogo de productos
