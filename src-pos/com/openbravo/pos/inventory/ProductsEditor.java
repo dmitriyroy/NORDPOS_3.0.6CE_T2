@@ -36,6 +36,7 @@ import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.ticket.CategoryInfo;
+import com.openbravo.pos.ticket.IngredientInfo;
 import com.openbravo.pos.ticket.ProductInfoEdit;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -43,13 +44,16 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.krysalis.barcode4j.impl.upcean.*;
 
@@ -103,6 +107,14 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     public ProductsEditor(AppView app, DataLogicSales dlSales, DirtyManager dirty) {
         initComponents();
+        
+        jTable_ComplexData = new MJTable();
+        jTable_ComplexData.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {}, new String [] {}
+        ));
+        jTable_ComplexData.setEnabled(false);
+        jScrollPane3.setViewportView(jTable_ComplexData);
+        
         m_App = app;
         m_dSales = dlSales;
 
@@ -329,6 +341,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         calculateMargin();
         calculatePriceSellTax();
+//        setComplexData();
     }
 
     @Override
@@ -381,6 +394,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         calculateMargin();
         calculatePriceSellTax();
+//        deleteComplexData();
     }
 
     @Override
@@ -412,7 +426,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jCheckBox_ComplexProduct.setSelected(((Boolean) myprod[17]));
         m_jPriceBuy.setEditable(!(Boolean) myprod[17]);
         jButton3.setEnabled((Boolean) myprod[17]);
-        jTable2.setEnabled((Boolean) myprod[17]);
+        jTable_ComplexData.setEnabled((Boolean) myprod[17]);
 
         // Los habilitados
         m_jRef.setEnabled(true);
@@ -437,6 +451,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         calculateMargin();
         calculatePriceSellTax();
+        try {
+            setComplexData((String)m_id);
+        } catch (BasicException ex) {
+            Logger.getLogger(ProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -465,12 +484,42 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         return myprod;
     }
+    
+    public void setComplexData(String id) throws BasicException{
+        List<IngredientInfo> ingredients = m_dSales.getIngredients(id);
+        jTable_ComplexData.setModel(new DefaultTableModel(new String [] {
+                    "ID","Продукт", "Коэфициент"
+                }, ingredients.size()));
+        jTable_ComplexData.getColumnModel().getColumn(0).setResizable(false);
+        jTable_ComplexData.getColumnModel().getColumn(0).setPreferredWidth(0);
+        jTable_ComplexData.getColumnModel().getColumn(0).setMinWidth(0);
+        jTable_ComplexData.getColumnModel().getColumn(0).setMaxWidth(0);
+        jTable_ComplexData.getColumnModel().getColumn(1).setResizable(false);
+        jTable_ComplexData.getColumnModel().getColumn(2).setResizable(false);
+        int row = 0;
+        for (IngredientInfo ingredient : ingredients) {
+            jTable_ComplexData.setValueAt(ingredient.getId(), row, 0);
+            jTable_ComplexData.setValueAt(ingredient.getIngredientName(), row, 1);
+            jTable_ComplexData.setValueAt(ingredient.getIngredientWeight(), row, 2);
+            row++;
+        }
+    }
 
+    class MJTable extends JTable {
+        public MJTable() {
+            super();
+        }
+        @Override
+        public boolean isCellEditable(int row, int column)
+        {
+          return false;
+        }
+    }  
     public String calculateComplexPriceBy(String id) throws BasicException{
         if(jCheckBox_ComplexProduct.isSelected()){
             m_jPriceBuy.setEditable(false);
             jButton3.setEnabled(true);
-            jTable2.setEnabled(true);
+            jTable_ComplexData.setEnabled(true);
             String outValue = m_dSales.getComplexPriceBy(id).toString();
             if(outValue != null){
                 outValue = outValue.replace(".",",");
@@ -481,7 +530,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         }
         m_jPriceBuy.setEditable(true);
         jButton3.setEnabled(false);
-        jTable2.setEnabled(false);
+        jTable_ComplexData.setEnabled(false);
         return m_jPriceBuy.getText();
     }
     
@@ -785,7 +834,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jCheckBox_ComplexProduct = new javax.swing.JCheckBox();
         jLabel_ComplexProduct = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        jTable_ComplexData = new javax.swing.JTable();
         jButton3 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new org.fife.ui.rtextarea.RTextScrollPane();
@@ -987,26 +1036,28 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jPanel2.add(jLabel_ComplexProduct);
         jLabel_ComplexProduct.setBounds(10, 170, 150, 20);
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        jTable_ComplexData.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"Кофе", "0,25"},
-                {"Сахар", "0,02"},
-                {"Молоко", "0,03"},
-                {"Молоко1", "0,03"},
-                {"Молоко2", "0,03"},
-                {"Молоко3", "0,03"},
-                {"Молоко4", "0,03"},
-                {"Молоко5", "0,03"},
-                {"Молоко6", "0,03"},
-                {"Молоко7", "0,03"},
-                {"Молоко8", "0,03"}
-            },
+                //                {"Кофе", "0,25"},
+                //                {"Сахар", "0,02"},
+                //                {"Молоко", "0,03"},
+                //                {"Молоко1", "0,03"},
+                //                {"Молоко2", "0,03"},
+                //                {"Молоко3", "0,03"},
+                //                {"Молоко4", "0,03"},
+                //                {"Молоко5", "0,03"},
+                //                {"Молоко6", "0,03"},
+                //                {"Молоко7", "0,03"},
+                //        {"Молоко8", "0,03"}
+            }
+            //    null
+            ,
             new String [] {
-                "Продукт", "Коэфициент"
+                //        "Продукт", "Коэфициент"
             }
         ));
-        jTable2.setEnabled(false);
-        jScrollPane3.setViewportView(jTable2);
+        jTable_ComplexData.setEnabled(false);
+        jScrollPane3.setViewportView(jTable_ComplexData);
 
         jPanel2.add(jScrollPane3);
         jScrollPane3.setBounds(250, 10, 280, 160);
@@ -1170,8 +1221,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         //new ComplexProductEditor().setVisible(true);
-
-        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor();
+        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales, m_id);
         complexProductsEditor.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -1179,11 +1229,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         // TODO add your handling code here:
         if (jCheckBox_ComplexProduct.isSelected()) {
             jButton3.setEnabled(true);
-            jTable2.setEnabled(true);
+            jTable_ComplexData.setEnabled(true);
             m_jPriceBuy.setEditable(false);
         } else {
             jButton3.setEnabled(false);
-            jTable2.setEnabled(false);
+            jTable_ComplexData.setEnabled(false);
             m_jPriceBuy.setEditable(true);
         }
     }//GEN-LAST:event_jCheckBox_ComplexProductActionPerformed
@@ -1220,7 +1270,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         // TODO add your handling code here:
     }//GEN-LAST:event_m_jPriceBuyActionPerformed
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButtonGenBarcode;
@@ -1247,7 +1296,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     private org.fife.ui.rtextarea.RTextScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTable_ComplexData;
     private javax.swing.JComboBox m_jAtt;
     private javax.swing.JTextField m_jCatalogOrder;
     private javax.swing.JComboBox m_jCategory;
