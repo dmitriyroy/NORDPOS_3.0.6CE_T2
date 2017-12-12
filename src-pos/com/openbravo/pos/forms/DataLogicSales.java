@@ -37,6 +37,7 @@ import com.openbravo.pos.ticket.CategoryInfo;
 import com.openbravo.pos.ticket.FindTicketsInfo;
 import com.openbravo.pos.ticket.IngredientInfo;
 import com.openbravo.pos.ticket.ProductInfoExt;
+import com.openbravo.pos.ticket.ProductMini;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
@@ -151,17 +152,26 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , SerializerWriteString.INSTANCE
             , IngredientInfo.getSerializerRead()).list(id);
     }
-    public final SentenceList getAllProductList(){
-        return new StaticSentence(s
-            , "SELECT ID, NAME FROM PRODUCTS"
-            , null
-            , new SerializerRead() { 
-                @Override
-                public Object readValues(DataRead dr) throws BasicException {
-                    return new TaxCategoryInfo(
-                            dr.getString(1),
-                            dr.getString(2));
-            }});
+    
+    public final List<ProductMini> getAllProductName() throws BasicException{
+        return new PreparedSentence(s
+            , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS"
+            , SerializerWriteString.INSTANCE
+            , IngredientInfo.getSerializerRead()).list();
+    }
+    
+    public final List<ProductMini> getAllProductNameComplex() throws BasicException{
+        return new PreparedSentence(s
+            , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = true "
+            , SerializerWriteString.INSTANCE
+            , IngredientInfo.getSerializerRead()).list();
+    }
+    
+    public final List<ProductMini> getAllProductNameNonComplex() throws BasicException{
+        return new PreparedSentence(s
+            , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = false "
+            , SerializerWriteString.INSTANCE
+            , IngredientInfo.getSerializerRead()).list();
     }
 
     // Catalogo de productos
