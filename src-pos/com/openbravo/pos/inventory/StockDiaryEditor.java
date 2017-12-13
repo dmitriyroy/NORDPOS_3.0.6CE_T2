@@ -66,6 +66,7 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
     private String attsetid;
     private String attsetinstid;
     private String attsetinstdesc;
+//    private boolean isComplex;
     
     private ComboBoxValModel m_ReasonModel;
     
@@ -349,6 +350,8 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
                 m_jcodebar.setText(productcode);
                 m_jreference.setText(productref);
                 jattributes.setText(null);
+//                isComplex = prod.isComplex();
+                m_junits.setEnabled(!prod.isComplex());
 
                 // calculo el precio sugerido para la entrada.
                 MovementReason reason = (MovementReason)  m_ReasonModel.getSelectedItem();
@@ -601,7 +604,7 @@ public class StockDiaryEditor extends javax.swing.JPanel implements EditorRecord
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(m_jprice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(231, Short.MAX_VALUE))
         );
 
         add(jPanel1, java.awt.BorderLayout.CENTER);
