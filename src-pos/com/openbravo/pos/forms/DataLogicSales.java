@@ -154,23 +154,23 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
     
     public final List<ProductMini> getAllProductName() throws BasicException{
-        return new PreparedSentence(s
+        return (List<ProductMini>) new PreparedSentence(s
             , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS"
-            , SerializerWriteString.INSTANCE
+            , null
             , ProductMini.getSerializerRead()).list();
     }
     
     public final List<ProductMini> getAllProductNameComplex() throws BasicException{
         return new PreparedSentence(s
             , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = true "
-            , SerializerWriteString.INSTANCE
+            , null
             , ProductMini.getSerializerRead()).list();
     }
     
     public final List<ProductMini> getAllProductNameNonComplex() throws BasicException{
         return new PreparedSentence(s
             , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = false "
-            , SerializerWriteString.INSTANCE
+            , null
             , ProductMini.getSerializerRead()).list();
     }
 
