@@ -46,15 +46,15 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         
         List<ProductMini> productMiniList = new ArrayList<>();
         try {
-            productMiniList = m_dSales.getAllProductNameNonComplex();
+            productMiniList = m_dSales.getAllProductName();
         } catch (BasicException ex) {
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         jTable_ProductList.setModel(new DefaultTableModel(new String [] {
                     "ID","Продукт", "Коэфициент"
-//                }, productMiniList.size()));
-                }, 1));
+                }, productMiniList.size()));
+//                }, 1));
         jTable_ProductList.getColumnModel().getColumn(0).setResizable(false);
         jTable_ProductList.getColumnModel().getColumn(0).setPreferredWidth(0);
         jTable_ProductList.getColumnModel().getColumn(0).setMinWidth(0);
@@ -62,15 +62,15 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         jTable_ProductList.getColumnModel().getColumn(1).setResizable(false);
         jTable_ProductList.getColumnModel().getColumn(2).setResizable(false);
         int row = 0;
-//        for (ProductMini productMini : productMiniList) {
-//            jTable_ProductList.setValueAt(productMini.getId(), row, 0);
-//            jTable_ProductList.setValueAt(productMini.getIngredientName(), row, 1);
-//            jTable_ProductList.setValueAt(productMini.isIsComplex(), row, 2);
-            jTable_ProductList.setValueAt("qwerty", 0, 0);
-            jTable_ProductList.setValueAt("Вася", 0, 1);
-            jTable_ProductList.setValueAt(productMiniList.size(), 0, 2);
-//            row++;
-//        }
+        for (ProductMini productMini : productMiniList) {
+            jTable_ProductList.setValueAt(productMini.getId(), row, 0);
+            jTable_ProductList.setValueAt(productMini.getIngredientName(), row, 1);
+            jTable_ProductList.setValueAt(productMini.isIsComplex(), row, 2);
+//            jTable_ProductList.setValueAt("qwerty", 0, 0);
+//            jTable_ProductList.setValueAt("Вася", 0, 1);
+//            jTable_ProductList.setValueAt(productMiniList.size(), 0, 2);
+            row++;
+        }
         
         
         
