@@ -154,7 +154,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
     
     public final List<ProductMini> getAllProductName() throws BasicException{
-        return (List<ProductMini>) new PreparedSentence(s
+        return new PreparedSentence(s
             , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS"
             , null
             , ProductMini.getSerializerRead()).list();
