@@ -73,6 +73,7 @@ public class Row {
     public SentenceExec getExecSentence(Session s, String sql, final int... indexes) {
         return new PreparedSentence(s, sql, 
             new SerializerWrite<Object[]>() {
+                @Override
                 public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
                     for (int i = 0; i < indexes.length; i++) {
                         fields[indexes[i]].getData().setValue(dp, i + 1, obj[indexes[i]]);
@@ -105,6 +106,7 @@ public class Row {
     public SentenceExec getInsertSentence(Session s, final Table t) {
         return new PreparedSentence(s,  t.getInsertSQL(), 
             new SerializerWrite<Object[]>() {
+                @Override
                 public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
                     for (int i = 0; i < t.getColumns().length; i++) {
                         fields[i].getData().setValue(dp, i + 1, obj[i]);
@@ -117,6 +119,7 @@ public class Row {
     public SentenceExec getDeleteSentence(Session s, final Table t) {
         return new PreparedSentence(s,  t.getDeleteSQL(), 
             new SerializerWrite<Object[]>() {
+                @Override
                 public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
                     int index = 1;
                     for (int i = 0; i < t.getColumns().length; i++) {
@@ -132,6 +135,7 @@ public class Row {
     public SentenceExec getUpdateSentence(Session s, final Table t) {
         return new PreparedSentence(s,  t.getUpdateSQL(), 
             new SerializerWrite<Object[]>() {
+                @Override
                 public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
                     int index = 1;
                     for (int i = 0; i < t.getColumns().length; i++) {
@@ -162,6 +166,7 @@ public class Row {
     }
     
     private class RowSerializerRead implements SerializerRead {
+        @Override
         public Object readValues(DataRead dr) throws BasicException {             
             Object[] m_values = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
@@ -172,8 +177,9 @@ public class Row {
     }  
     
     private class RowVectorer implements Vectorer {
+        @Override
         public String[] getHeaders() throws BasicException {
-            List<String> l = new ArrayList<String>();
+            List<String> l = new ArrayList<>();
             for (Field f : fields) {
                 if (f.isSearchable()) {
                     l.add(f.getLabel());
@@ -181,6 +187,7 @@ public class Row {
             }
             return l.toArray(new String[l.size()]);
         }
+        @Override
         public String[] getValues(Object obj) throws BasicException {   
             Object[] values = (Object[]) obj;            
             List<String> l = new ArrayList<String>();
@@ -194,6 +201,7 @@ public class Row {
     }  
     
     private class RowRenderString implements IRenderString {
+        @Override
         public String getRenderString(Object value) {        
             Object[] values = (Object[]) value;            
             StringBuffer s = new StringBuffer();
@@ -211,7 +219,7 @@ public class Row {
     
     private class RowComparatorCreator implements ComparatorCreator {
         
-        private List<Integer> comparablefields = new ArrayList<Integer>();
+        private List<Integer> comparablefields = new ArrayList<>();
         
         public RowComparatorCreator() {
             for (int i = 0; i < fields.length; i++) {
@@ -221,6 +229,7 @@ public class Row {
             }            
         }
         
+        @Override
         public String[] getHeaders() {
             String [] headers = new String [comparablefields.size()];
             for (int i = 0; i < comparablefields.size(); i++) {
@@ -229,8 +238,10 @@ public class Row {
             return headers;
         }   
         
+        @Override
         public Comparator createComparator(final int[] orderby) {
             return new Comparator() {
+                @Override
                 public int compare(Object o1, Object o2) {
                     if (o1 == null) {
                         if (o2 == null) {
