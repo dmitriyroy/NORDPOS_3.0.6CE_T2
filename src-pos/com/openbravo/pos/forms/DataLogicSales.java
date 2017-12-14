@@ -128,13 +128,13 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , ProductInfoExt.getSerializerRead()).find(sReference);
     }
 
-    // team2
+    // team2 - start
     public final Double getComplexPriceBy(String id) throws BasicException {
         return (Double) new StaticSentence(s,
                 "SELECT sum(ifnull(t3.PRICEBUY,0) * ifnull(t2.INGREDIENT_WEIGHT,0)) as \"PRICEBUY\" " +
                 "  FROM PRODUCTS as t1                                                              " +
-                "  join RECIPES  as t2 on t2.PRODUCT_ID = t1.ID                                     " +
-                "  join PRODUCTS as t3 on t3.ID         = t2.INGREDIENT_ID                          " +
+                "  JOIN RECIPES  as t2 on t2.PRODUCT_ID = t1.ID                                     " +
+                "  JOIN PRODUCTS as t3 on t3.ID         = t2.INGREDIENT_ID                          " +
                 " WHERE t1.ID = ?                                                                   ",
                 SerializerWriteString.INSTANCE,
                 SerializerReadDouble.INSTANCE).find(id);
@@ -152,13 +152,14 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , SerializerWriteString.INSTANCE
             , IngredientInfo.getSerializerRead()).list(id);
     }
-    
     public final List<ProductMini> getAllProductName() throws BasicException{
         return new PreparedSentence(s
             , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS"
             , null
             , ProductMini.getSerializerRead()).list();
     }
+    // team2 - end
+
     
     public final List<ProductMini> getAllProductNameComplex() throws BasicException{
         return new PreparedSentence(s
