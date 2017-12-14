@@ -29,10 +29,7 @@ import com.openbravo.data.loader.PreparedSentence;
 import com.openbravo.data.loader.SentenceExec;
 import com.openbravo.data.loader.SentenceExecTransaction;
 import com.openbravo.data.loader.SerializerRead;
-import com.openbravo.data.loader.SerializerReadInteger;
 import com.openbravo.data.loader.SerializerWriteBasicExt;
-import com.openbravo.data.loader.SerializerWriteString;
-import com.openbravo.data.loader.StaticSentence;
 import com.openbravo.data.model.Field;
 import com.openbravo.data.model.Row;
 import com.openbravo.data.user.EditorRecord;
@@ -43,8 +40,6 @@ import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.panels.JPanelTableExt;
 import com.openbravo.pos.reports.JParamsLocation;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
