@@ -161,7 +161,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             + "       t1.NAME,                                  "
             + "       t2.INGREDIENT_WEIGHT                      "
             + "  FROM PRODUCTS as t1                            "
-            + "  left outer JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
+            + "  LEFT OUTER JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
             , null
             , ProductMini.getSerializerRead()).list();
     }
@@ -174,7 +174,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             + "       t1.NAME,                                  "
             + "       t2.INGREDIENT_WEIGHT                      "
             + "  FROM PRODUCTS as t1                            "
-            + "  left outer JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
+            + "  LEFT OUTER JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
             + " WHERE t1.ISCOMPLEX = true                       "
             , null
             , ProductMini.getSerializerRead()).list();
@@ -186,7 +186,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             + "       t1.NAME,                                 "
             + "       t2.INGREDIENT_WEIGHT                     "
             + "  FROM PRODUCTS as t1                           "
-            + " left outer JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
+            + " LEFT OUTER JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
             + " WHERE t1.ISCOMPLEX = false                     "
             , null
             , ProductMini.getSerializerRead()).list();
