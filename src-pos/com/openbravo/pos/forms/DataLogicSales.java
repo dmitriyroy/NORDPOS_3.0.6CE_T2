@@ -42,7 +42,10 @@ import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
+import com.openbravo.pos.util.T2Logger;
+import static com.openbravo.pos.util.T2Logger.writeLog;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -155,6 +158,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , SerializerWriteString.INSTANCE
             , IngredientInfo.getSerializerRead()).list(id);
     }
+    
     public final List<ProductMini> getAllProductName() throws BasicException{
         return new PreparedSentence(s
             , "SELECT t1.ID,                                    "
@@ -165,8 +169,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , null
             , ProductMini.getSerializerRead()).list();
     }
-    // team2 - end
-
     
     public final List<ProductMini> getAllProductNameComplex() throws BasicException{
         return new PreparedSentence(s
@@ -191,6 +193,69 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , null
             , ProductMini.getSerializerRead()).list();
     }
+    
+    public Integer addIngredientIntoRecipe(final String recipeId, 
+            final String ingredientId, 
+            final Double ingredientWeight) throws BasicException{
+        
+        try {
+            writeLog(this.getClass().getName(), "recipeId = " + recipeId);
+            
+            int countInsertedRow = 0;
+            int countIngredientInRecipe = 0;
+            // проверить есть ли ингредиент в рецепте
+            countIngredientInRecipe = (Integer) new StaticSentence(s,
+                    "SELECT COUNT(*) FROM RECIPES WHERE PRODUCT_ID = ? AND INGREDIENT_ID = ?",
+                    SerializerWriteParams.INSTANCE,
+                    SerializerReadInteger.INSTANCE).find( new DataParams() {
+                            @Override
+                            public void writeValues() throws BasicException {
+                                setString(1, recipeId);
+                                setString(2, ingredientId);
+                            }
+                        });
+            writeLog(this.getClass().getName(), "countIngredientInRecipe = " + countIngredientInRecipe);   
+
+            // если ингредиента нет, то добавить его
+            if(countIngredientInRecipe == 0){
+                countInsertedRow = new PreparedSentence(s
+                        , "INSERT INTO RECIPES (ID, PRODUCT_ID, INGREDIENT_ID, INGREDIENT_WEIGHT) VALUES (?, ?, ?, ?)"
+                        , SerializerWriteParams.INSTANCE
+                ).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setTimestamp(1, new Date());
+                        setString(2, recipeId);
+                        setString(3, ingredientId);
+                        setDouble(4, ingredientWeight);
+                    }
+                });
+            }else{
+                countInsertedRow = new PreparedSentence(s
+                        , "UPDATE RECIPES               "
+                        + "   SET INGREDIENT_WEIGHT = ? "
+                        + " WHERE PRODUCT_ID        = ? "
+                        + "   AND INGREDIENT_ID     = ? "
+                        , SerializerWriteParams.INSTANCE
+                ).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setDouble(1, ingredientWeight);
+                        setString(2, recipeId);
+                        setString(3, ingredientId);
+                    }
+                });
+            }
+            return countInsertedRow;        
+        } catch (Exception ex) {
+            writeLog(this.getClass().getName(), "ex = " + ex.getMessage()); 
+            Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -7;
+    }
+    
+//    public Integer 
+    // team2 - end
 
     // Catalogo de productos
     public final List<CategoryInfo> getRootCategories() throws BasicException {

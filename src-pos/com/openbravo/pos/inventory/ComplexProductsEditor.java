@@ -34,9 +34,12 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     final String[] list1ModelData;
     List<IngredientInfo> ingredients;
     List<ProductMini> productMiniList;
+    DataLogicSales m_dSales;
+    String productId;
     
     public ComplexProductsEditor(DataLogicSales m_dSales, Object id) {
-        
+        this.m_dSales = m_dSales;
+        this.productId = (String) id;
         initComponents();
         setModalityType(ModalityType.APPLICATION_MODAL);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -265,24 +268,24 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonDeleteActionPerformed
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-        // TODO add your handling code here:
-        
-        int index = jList_Ingredient.getSelectedIndex();
-        String ingredientId = productMiniList.get(index).getId();
-        String ingredientName = jList_Ingredient.getSelectedValue();
-        //TODO Add to base recep, check if exist
-        
-        DefaultTableModel model = (DefaultTableModel) jTable_ProductList.getModel();
-        if (!existsInTable(ingredientId)) {
-            model.addRow(new Object[]{ingredientId,ingredientName ,"0"});
+        try {
+            // TODO add your handling code here:
+            
+            int index = jList_Ingredient.getSelectedIndex();
+            String ingredientId = productMiniList.get(index).getId();
+            String ingredientName = jList_Ingredient.getSelectedValue();
+            //TODO Add to base recep
+            
+            DefaultTableModel model = (DefaultTableModel) jTable_ProductList.getModel();
+            if (!existsInTable(ingredientId)) {
+                m_dSales.addIngredientIntoRecipe(this.productId,ingredientId ,0.00);
+                model.addRow(new Object[]{ingredientId,ingredientName ,"0.00"});
+            }
+            //jTable_ProductList.setValueAt(, 0, 1);
+            // jTable_ProductList.setValueAt(productMiniList.size(), 0, 2);
+        } catch (BasicException ex) {
+            Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
-        
-        //jTable_ProductList.setValueAt(, 0, 1);
-       // jTable_ProductList.setValueAt(productMiniList.size(), 0, 2);
-        
-        
     }//GEN-LAST:event_jButtonAddActionPerformed
 
     

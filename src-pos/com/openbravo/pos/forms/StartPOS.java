@@ -23,6 +23,7 @@ import com.nordpos.server.jetty.AppContextBuilder;
 import com.nordpos.server.jetty.ServerApp;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.instance.InstanceQuery;
+import com.openbravo.pos.util.T2Logger;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -54,6 +55,9 @@ public class StartPOS {
 
     private static final int DEFAULT_WEBAPPSEVER_PORT = 8135;
     private static final String DEFAULT_WEBAPPSEVER_FOLDER = new File("webapps/").getAbsolutePath();
+    
+    // team2
+    private static final T2Logger T2Logger = new T2Logger();
 
     private StartPOS() {
     }
@@ -67,6 +71,7 @@ public class StartPOS {
         } catch (RemoteException | NotBoundException e) {
             return true;
         }
+        
     }
 
     public static void setUIFont(javax.swing.plaf.FontUIResource f) {
