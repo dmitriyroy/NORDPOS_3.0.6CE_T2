@@ -14,12 +14,12 @@ public class ProductMini {
     
     private String id;
     private String ingredientName;
-    private boolean isComplex;
+    private Double ingredientWeight;
 
-    public ProductMini(String id, String ingredientName, boolean isComplex) {
+    public ProductMini(String id, String ingredientName, Double ingredientWeight) {
         this.id = id;
         this.ingredientName = ingredientName;
-        this.isComplex = isComplex;
+        this.ingredientWeight = ingredientWeight;
     }
 
     public String getId() {
@@ -38,12 +38,12 @@ public class ProductMini {
         this.ingredientName = ingredientName;
     }
 
-    public boolean isIsComplex() {
-        return isComplex;
+    public Double getIngredientWeight() {
+        return ingredientWeight;
     }
 
-    public void setIsComplex(boolean isComplex) {
-        this.isComplex = isComplex;
+    public void setIngredientWeight(Double ingredientWeight) {
+        this.ingredientWeight = ingredientWeight;
     }
     
     public static SerializerRead getSerializerRead() {
@@ -53,14 +53,16 @@ public class ProductMini {
                 return new ProductMini(
                         dr.getString(1),
                         dr.getString(2),
-                        dr.getBoolean(3));
+                        dr.getDouble(3));
             }
         };
     }
 
     @Override
     public String toString() {
-        return "ProductMini{" + "id=" + id + ", ingredientName=" + ingredientName + ", isComplex=" + isComplex + '}';
+        return "ProductMini{" + "id=" + id + ", ingredientName=" + ingredientName + ", ingredientWeight=" + ingredientWeight + '}';
     }
+
+    
     
 }

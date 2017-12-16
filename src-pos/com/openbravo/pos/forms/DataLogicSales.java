@@ -43,10 +43,15 @@ import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -152,7 +157,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
     public final List<ProductMini> getAllProductName() throws BasicException{
         return new PreparedSentence(s
-            , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS"
+            , "SELECT t1.ID,                                    "
+            + "       t1.NAME,                                  "
+            + "       t2.INGREDIENT_WEIGHT                      "
+            + "  FROM PRODUCTS as t1                            "
+            + "  left outer JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
             , null
             , ProductMini.getSerializerRead()).list();
     }
@@ -161,14 +170,24 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     
     public final List<ProductMini> getAllProductNameComplex() throws BasicException{
         return new PreparedSentence(s
-            , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = true "
+            , "SELECT t1.ID,                                    "
+            + "       t1.NAME,                                  "
+            + "       t2.INGREDIENT_WEIGHT                      "
+            + "  FROM PRODUCTS as t1                            "
+            + "  left outer JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
+            + " WHERE t1.ISCOMPLEX = true                       "
             , null
             , ProductMini.getSerializerRead()).list();
     }
     
     public final List<ProductMini> getAllProductNameNonComplex() throws BasicException{
         return new PreparedSentence(s
-            , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = false "
+            , "SELECT t1.ID,                                   "
+            + "       t1.NAME,                                 "
+            + "       t2.INGREDIENT_WEIGHT                     "
+            + "  FROM PRODUCTS as t1                           "
+            + " left outer JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
+            + " WHERE t1.ISCOMPLEX = false                     "
             , null
             , ProductMini.getSerializerRead()).list();
     }
@@ -729,6 +748,66 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS) VALUES (?, ?, ?, ?)"
                         , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {3, 4, 5, 6})).exec(params);
                 }
+                
+                // team2 - start
+                // получить ID всех ингредиентов 
+                List<String> ingredientesId = new PreparedSentence(s
+                    ,"SELECT distinct                            " +
+                     "	     INGREDIENT_ID                       " +
+                     "  FROM RECIPES                             " +
+                     " WHERE PRODUCT_ID =  ?                     "
+                    , SerializerWriteString.INSTANCE
+//                    , SerializerReadString.INSTANCE).list((String)((Object[]) params)[4]);
+                    , SerializerReadString.INSTANCE).list((String)((Object[]) params)[4]);
+                
+                // проверить, есть ли по ним запись в STOCKCURRENT
+                if(!ingredientesId.isEmpty()){
+                    int countLine = 0;
+                    for (String productId : ingredientesId) {                        
+                        countLine = (Integer) new StaticSentence(s,
+                        "SELECT COUNT(*) FROM STOCKCURRENT WHERE PRODUCT = ?",
+                        SerializerWriteString.INSTANCE,
+                        SerializerReadInteger.INSTANCE).find(productId);
+                    
+                        // если записи нет, то вставить с нолем в продажах
+                        if(countLine == 0){
+                            new PreparedSentence(s
+                                , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS) VALUES (?, \"" + productId + "\", ?, 0)"
+                                , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {3,  5})).exec(params);
+                        }
+                        
+                        countLine = 0;
+                    }
+                    
+                }
+                // после этого сделать UPDATE по комплексному продукту
+                updateresult += ((Object[]) params)[5] == null // if ATTRIBUTESETINSTANCE_ID is null
+                        ? new PreparedSentence(s
+                            ,   "UPDATE STOCKCURRENT as t1                                 " +
+                                "  JOIN PRODUCTS     as t2 on t2.ID = t1.PRODUCT           " +
+                                "  JOIN RECIPES      as t3 on t3.PRODUCT_ID = t2.ID        " +
+                                "  JOIN PRODUCTS     as t4 on t4.ID = t3.INGREDIENT_ID     " +
+                                "  JOIN STOCKCURRENT as t5 on t5.PRODUCT = t4.ID           " +
+                                "   SET  t5.UNITS = t5.UNITS + (? * t3.INGREDIENT_WEIGHT)  " +
+                                " WHERE t1.LOCATION = ?                                    " +
+                                "   AND t1.PRODUCT = ?                                     " +
+                                "   AND t1.ATTRIBUTESETINSTANCE_ID IS NULL                 " +
+                                "   AND t2.ISCOMPLEX = TRUE                                " 
+                            , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {6, 3, 4})).exec(params)
+                        : new PreparedSentence(s
+                            ,   "UPDATE STOCKCURRENT as t1                                 " +
+                                "  JOIN PRODUCTS     as t2 on t2.ID = t1.PRODUCT           " +
+                                "  JOIN RECIPES      as t3 on t3.PRODUCT_ID = t2.ID        " +
+                                "  JOIN PRODUCTS     as t4 on t4.ID = t3.INGREDIENT_ID     " +
+                                "  JOIN STOCKCURRENT as t5 on t5.PRODUCT = t4.ID           " +
+                                "   SET  t5.UNITS = t5.UNITS + (? * t3.INGREDIENT_WEIGHT)  " +
+                                " WHERE t1.LOCATION = ?                                    " +
+                                "   AND t1.PRODUCT = ?                                     " +
+                                "   AND t1.ATTRIBUTESETINSTANCE_ID = ?                     " +
+                                "   AND t2.ISCOMPLEX = TRUE                                " 
+                            , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {6, 3, 4, 5})).exec(params);
+                // team2 - end
+                
                 return new PreparedSentence(s
                     , "INSERT INTO STOCKDIARY (ID, DATENEW, REASON, LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS, PRICE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
                     , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {0, 1, 2, 3, 4, 5, 6, 7})).exec(params);
@@ -753,6 +832,63 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS) VALUES (?, ?, ?, -(?))"
                         , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {3, 4, 5, 6})).exec(params);
                 }
+                
+                // team2 - start
+                // получить ID всех ингредиентов 
+                List<String> ingredientesId = new PreparedSentence(s
+                    ,"SELECT distinct                            " +
+                     "	     INGREDIENT_ID                       " +
+                     "  FROM RECIPES                             " +
+                     " WHERE PRODUCT_ID =  ?                     "
+                    , SerializerWriteString.INSTANCE
+                    , SerializerReadString.INSTANCE).list((String)((Object[]) params)[4]);
+                
+                // проверить, есть ли по ним запись в STOCKCURRENT
+                if(!ingredientesId.isEmpty()){
+                    int countLine = 0;
+                    for (String productId : ingredientesId) {                        
+                        countLine = (Integer) new StaticSentence(s,
+                        "SELECT COUNT(*) FROM STOCKCURRENT WHERE PRODUCT = ?",
+                        SerializerWriteString.INSTANCE,
+                        SerializerReadInteger.INSTANCE).find(productId);
+                    
+                        // если записи нет, то вставить с нолем в продажах
+                        if(countLine == 0){
+                            new PreparedSentence(s
+                                , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS) VALUES (?, \"" + productId + "\", ?, 0)"
+                                , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {3,  5})).exec(params);
+                        }
+                        countLine = 0;
+                    }
+                }
+                // после этого сделать UPDATE по комплексному продукту
+                updateresult += ((Object[]) params)[5] == null // if ATTRIBUTESETINSTANCE_ID is null
+                        ? new PreparedSentence(s
+                            ,   "UPDATE STOCKCURRENT as t1                                 " +
+                                "  JOIN PRODUCTS     as t2 on t2.ID = t1.PRODUCT           " +
+                                "  JOIN RECIPES      as t3 on t3.PRODUCT_ID = t2.ID        " +
+                                "  JOIN PRODUCTS     as t4 on t4.ID = t3.INGREDIENT_ID     " +
+                                "  JOIN STOCKCURRENT as t5 on t5.PRODUCT = t4.ID           " +
+                                "   SET  t5.UNITS = t5.UNITS - (? * t3.INGREDIENT_WEIGHT)  " +
+                                " WHERE t1.LOCATION = ?                                    " +
+                                "   AND t1.PRODUCT = ?                                     " +
+                                "   AND t1.ATTRIBUTESETINSTANCE_ID IS NULL                 " +
+                                "   AND t2.ISCOMPLEX = TRUE                                " 
+                            , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {6, 3, 4})).exec(params)
+                        : new PreparedSentence(s
+                            ,   "UPDATE STOCKCURRENT as t1                                 " +
+                                "  JOIN PRODUCTS     as t2 on t2.ID = t1.PRODUCT           " +
+                                "  JOIN RECIPES      as t3 on t3.PRODUCT_ID = t2.ID        " +
+                                "  JOIN PRODUCTS     as t4 on t4.ID = t3.INGREDIENT_ID     " +
+                                "  JOIN STOCKCURRENT as t5 on t5.PRODUCT = t4.ID           " +
+                                "   SET  t5.UNITS = t5.UNITS - (? * t3.INGREDIENT_WEIGHT)  " +
+                                " WHERE t1.LOCATION = ?                                    " +
+                                "   AND t1.PRODUCT = ?                                     " +
+                                "   AND t1.ATTRIBUTESETINSTANCE_ID = ?                     " +
+                                "   AND t2.ISCOMPLEX = TRUE                                " 
+                            , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {6, 3, 4, 5})).exec(params);
+                // team2 - end
+                
                 return new PreparedSentence(s
                     , "DELETE FROM STOCKDIARY WHERE ID = ?"
                     , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {0})).exec(params);

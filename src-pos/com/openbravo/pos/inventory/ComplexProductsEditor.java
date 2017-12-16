@@ -65,7 +65,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         for (ProductMini productMini : productMiniList) {
             jTable_ProductList.setValueAt(productMini.getId(), row, 0);
             jTable_ProductList.setValueAt(productMini.getIngredientName(), row, 1);
-            jTable_ProductList.setValueAt(productMini.isIsComplex(), row, 2);
+            jTable_ProductList.setValueAt(productMini.getIngredientWeight(), row, 2);
 //            jTable_ProductList.setValueAt("qwerty", 0, 0);
 //            jTable_ProductList.setValueAt("Вася", 0, 1);
 //            jTable_ProductList.setValueAt(productMiniList.size(), 0, 2);
