@@ -488,7 +488,9 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     public void setComplexData(String id) throws BasicException{
         List<IngredientInfo> ingredients = m_dSales.getIngredients(id);
         jTable_ComplexData.setModel(new DefaultTableModel(new String [] {
-                    "ID","Продукт", "Коэфициент"
+                    "ID",
+                    AppLocal.getIntString("column.product"), 
+                    AppLocal.getIntString("column.coefficient")
                 }, ingredients.size()));
         jTable_ComplexData.getColumnModel().getColumn(0).setResizable(false);
         jTable_ComplexData.getColumnModel().getColumn(0).setPreferredWidth(0);
@@ -1062,7 +1064,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jPanel2.add(jScrollPane3);
         jScrollPane3.setBounds(250, 10, 280, 160);
 
-        jButton3.setText("Изменить рецепт");
+        jButton3.setText(AppLocal.getIntString("button.editRecipe"));
         jButton3.setEnabled(false);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1070,7 +1072,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             }
         });
         jPanel2.add(jButton3);
-        jButton3.setBounds(390, 180, 140, 23);
+        jButton3.setBounds(320, 180, 210, 23);
 
         jTabbedPane1.addTab(AppLocal.getIntString("label.prodstock"), jPanel2); // NOI18N
 

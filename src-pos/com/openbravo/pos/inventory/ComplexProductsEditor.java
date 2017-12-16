@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package com.openbravo.pos.inventory;
-
 import com.openbravo.basic.BasicException;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.DataLogicSales;
@@ -20,6 +19,7 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 
+
 /**
  *
  * @author AVM
@@ -31,6 +31,10 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
      */
     private final int FRAME_WIDTH = 500;
     private final int FRAME_HEIGHT = 380;
+    final String[] list1ModelData;
+    List<IngredientInfo> ingredients;
+    List<ProductMini> productMiniList;
+    
     public ComplexProductsEditor(DataLogicSales m_dSales, Object id) {
         
         initComponents();
@@ -44,17 +48,19 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         setTitle(AppLocal.getIntString("title.editRecept"));
         setResizable(false);
         
-        List<ProductMini> productMiniList = new ArrayList<>();
+        ingredients = new ArrayList<>();
         try {
-            productMiniList = m_dSales.getAllProductName();
+            ingredients = m_dSales.getIngredients((String)id);
         } catch (BasicException ex) {
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         jTable_ProductList.setModel(new DefaultTableModel(new String [] {
-                    "ID","Продукт", "Коэфициент"
-                }, productMiniList.size()));
-//                }, 1));
+                    "ID",
+                    AppLocal.getIntString("column.product"), 
+                    AppLocal.getIntString("column.coefficient")
+                }, ingredients.size()));
+                //}, 1));
         jTable_ProductList.getColumnModel().getColumn(0).setResizable(false);
         jTable_ProductList.getColumnModel().getColumn(0).setPreferredWidth(0);
         jTable_ProductList.getColumnModel().getColumn(0).setMinWidth(0);
@@ -62,29 +68,29 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         jTable_ProductList.getColumnModel().getColumn(1).setResizable(false);
         jTable_ProductList.getColumnModel().getColumn(2).setResizable(false);
         int row = 0;
-        for (ProductMini productMini : productMiniList) {
-            jTable_ProductList.setValueAt(productMini.getId(), row, 0);
-            jTable_ProductList.setValueAt(productMini.getIngredientName(), row, 1);
-            jTable_ProductList.setValueAt(productMini.getIngredientWeight(), row, 2);
-//            jTable_ProductList.setValueAt("qwerty", 0, 0);
-//            jTable_ProductList.setValueAt("Вася", 0, 1);
+        for (IngredientInfo ingredientInfo : ingredients) {
+            jTable_ProductList.setValueAt(ingredientInfo.getIngredientId(), row, 0);
+            jTable_ProductList.setValueAt(ingredientInfo.getIngredientName(), row, 1);
+            jTable_ProductList.setValueAt(ingredientInfo.getIngredientWeight(), row, 2);
+            //jTable_ProductList.setValueAt("qwerty", 0, 0);
+            //jTable_ProductList.setValueAt("Вася", 0, 1);
 //            jTable_ProductList.setValueAt(productMiniList.size(), 0, 2);
             row++;
         }
         
         
         
-        List<IngredientInfo> ingredients = new ArrayList<>();
+        productMiniList = new ArrayList<>();
         
         try {
-            ingredients = m_dSales.getIngredients((String)id);
+            productMiniList = m_dSales.getAllProductNameNonComplex();
         } catch (BasicException ex) {
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        final String[] list1ModelData = new String[ingredients.size()];
-        for (int i = 0; i < ingredients.size(); i++) {
-            list1ModelData[i] = ingredients.get(i).getIngredientName();
+        list1ModelData = new String[productMiniList.size()];
+        for (int i = 0; i < productMiniList.size(); i++) {
+            list1ModelData[i] = productMiniList.get(i).getIngredientName();
         }
         
         
@@ -96,6 +102,22 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         });
         
     }
+    /*public ComplexProductsEditor() {
+        
+        initComponents();
+        setModalityType(ModalityType.APPLICATION_MODAL);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int locationX = (screenSize.width - FRAME_WIDTH) / 2;
+        int locationY = (screenSize.height - FRAME_HEIGHT) / 2;
+        setBounds(new Rectangle(locationX, locationY, FRAME_WIDTH, FRAME_HEIGHT));        
+        //setDefaultCloseOperation(HIDE_ON_CLOSE);
+        setSize(FRAME_WIDTH,FRAME_HEIGHT);
+        setTitle(AppLocal.getIntString("title.editRecept"));
+        setResizable(false);
+        
+        
+        
+    }*/
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -108,13 +130,13 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
 
         jScrollPane2 = new javax.swing.JScrollPane();
         jList_Ingredient = new javax.swing.JList<>();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jToggleButton2 = new javax.swing.JToggleButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable_ProductList = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
+        jButtonDelete = new javax.swing.JButton();
+        jButtonAdd = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -123,11 +145,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane3.setViewportView(jList_Ingredient);
-
-        jToggleButton1.setText("<<<");
-
-        jToggleButton2.setText(">>>");
+        jScrollPane2.setViewportView(jList_Ingredient);
 
         jLabel1.setText(AppLocal.getIntString("editRecept.toRecept"));
 
@@ -135,34 +153,47 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
 
         jTable_ProductList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"id1","Кофе", "0,25"},
-                {"id1","Сахар", "0,02"},
-                {"id1","Молоко", "0,03"},
-                {"id1","Молоко1", "0,03"},
-                {"id1","Молоко2", "0,03"},
-                {"id1","Молоко3", "0,03"},
-                {"id1","Молоко4", "0,03"},
-                {"id1","Молоко5", "0,03"},
-                {"id1","Молоко6", "0,03"},
-                {"id1","Молоко7", "0,03"},
-                {"id1","Молоко8", "0,03"}
+                {"Кофе", "0,25"},
+                {"Сахар", "0,02"},
+                {"Молоко", "0,03"},
+                {"Молоко1", "0,03"},
+                {"Молоко2", "0,03"},
+                {"Молоко3", "0,03"},
+                {"Молоко4", "0,03"},
+                {"Молоко5", "0,03"},
+                {"Молоко6", "0,03"},
+                {"Молоко7", "0,03"},
+                {"Молоко8", "0,03"}
             },
             /*new String [] {
                 "Продукт", "Коэфициент"
             }*/
             new String [] {
-                new String("ID"),
                 AppLocal.getIntString("column.product"),
                 AppLocal.getIntString("column.coefficient")
             }
         ));
         jTable_ProductList.setEnabled(true);
-        jScrollPane2.setViewportView(jTable_ProductList);
+        jScrollPane3.setViewportView(jTable_ProductList);
 
         jButton1.setText(AppLocal.getIntString("button.doneEdit"));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButtonDelete.setText(">>>");
+        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDeleteActionPerformed(evt);
+            }
+        });
+
+        jButtonAdd.setText("<<<");
+        jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAddActionPerformed(evt);
             }
         });
 
@@ -182,8 +213,8 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
                                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jToggleButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-                                    .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                    .addComponent(jButtonDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                                    .addComponent(jButtonAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
@@ -204,9 +235,9 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jToggleButton1)
+                        .addComponent(jButtonAdd)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jToggleButton2))
+                        .addComponent(jButtonDelete))
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
@@ -219,6 +250,38 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
+        
+         int rowId = jTable_ProductList.getSelectedRow();
+        
+        Object idProduct = jTable_ProductList.getModel().getValueAt(rowId, 0);
+        //TODO @DimaRoy remove record from base by idProduct
+        ((DefaultTableModel)jTable_ProductList.getModel()).removeRow(rowId);
+        jTable_ProductList.revalidate();
+        
+    }//GEN-LAST:event_jButtonDeleteActionPerformed
+
+    private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
+        // TODO add your handling code here:
+        
+        int index = jList_Ingredient.getSelectedIndex();
+        String ingredientId = productMiniList.get(index).getId();
+        String ingredientName = jList_Ingredient.getSelectedValue();
+        //TODO Add to base recep, check if exist
+        
+        DefaultTableModel model = (DefaultTableModel) jTable_ProductList.getModel();
+        if (!existsInTable(ingredientId)) {
+            model.addRow(new Object[]{ingredientId,ingredientName ,"0"});
+        }
+        
+        
+        
+        //jTable_ProductList.setValueAt(, 0, 1);
+       // jTable_ProductList.setValueAt(productMiniList.size(), 0, 2);
+        
+        
+    }//GEN-LAST:event_jButtonAddActionPerformed
 
     
     /*public static void main(String args[]) {
@@ -246,13 +309,23 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonAdd;
+    private javax.swing.JButton jButtonDelete;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JList<String> jList_Ingredient;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable_ProductList;
-    private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JToggleButton jToggleButton2;
     // End of variables declaration//GEN-END:variables
+
+    private boolean existsInTable(String ingredientId) {
+        for(int i = 0; i < jTable_ProductList.getRowCount(); i++) {
+            String productId = (String) jTable_ProductList.getValueAt(i, 0);
+            if (ingredientId.trim().equals(productId)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
