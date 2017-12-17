@@ -13,6 +13,8 @@ import static com.openbravo.pos.util.T2FileLogger.writeLog;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import static java.lang.Double.valueOf;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,12 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     JTable jTable_ComplexData;
     
     public ComplexProductsEditor(final DataLogicSales m_dSales, Object id, JTable jTable_ComplexData) {
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                repaintIngredientTableInProductForm();
+            }
+          });
         this.m_dSales = m_dSales;
         this.productId = (String) id;
         this.jTable_ComplexData = jTable_ComplexData;
@@ -275,6 +283,8 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    
     
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
         
