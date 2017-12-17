@@ -42,14 +42,9 @@ import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
-import com.openbravo.pos.util.T2FileLogger;
 import static com.openbravo.pos.util.T2FileLogger.writeLog;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -199,7 +194,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             final Double ingredientWeight) throws BasicException{
         
         try {
-            writeLog(this.getClass().getName(), "recipeId = " + recipeId);
+//            writeLog(this.getClass().getName(), "recipeId = " + recipeId);
             
             int countInsertedRow = 0;
             int countUpdatedRow = 0;
@@ -215,7 +210,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                                 setString(2, ingredientId);
                             }
                         });
-            writeLog(this.getClass().getName(), "countIngredientInRecipe = " + countIngredientInRecipe);   
+//            writeLog(this.getClass().getName(), "countIngredientInRecipe = " + countIngredientInRecipe);   
 
             // если ингредиента нет, то добавить его
             if(countIngredientInRecipe == 0){
@@ -247,11 +242,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     }
                 });
             }
-            writeLog(this.getClass().getName(), "countInsertedRow = " + countInsertedRow);  
-            writeLog(this.getClass().getName(), "countUpdatetedRow = " + countUpdatedRow);  
+//            writeLog(this.getClass().getName(), "countInsertedRow = " + countInsertedRow);  
+//            writeLog(this.getClass().getName(), "countUpdatetedRow = " + countUpdatedRow);  
             return countInsertedRow;        
         } catch (Exception ex) {
-            writeLog(this.getClass().getName(), "ex = " + ex.getMessage()); 
+//            writeLog(this.getClass().getName(), "ex = " + ex.getMessage()); 
             Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
         }
         return -7;
