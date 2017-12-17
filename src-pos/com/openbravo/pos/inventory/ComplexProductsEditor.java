@@ -13,16 +13,11 @@ import static com.openbravo.pos.util.T2FileLogger.writeLog;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import static java.lang.Double.valueOf;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -272,7 +267,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         try {
             int rowId = jTable_ProductList.getSelectedRow();
             String ingredientId = (String) jTable_ProductList.getModel().getValueAt(rowId, 0);
-            //TODO @DimaRoy remove record from base by idProduct
+            //TODO @DimaRoy remove record from base by idProduct - DONE
             int countDeletedRow = m_dSales.deleteIngredientFromRecipe(this.productId,ingredientId);
             ((DefaultTableModel)jTable_ProductList.getModel()).removeRow(rowId);
             jTable_ProductList.revalidate();
@@ -317,8 +312,8 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
 
     private boolean existsInTable(String ingredientId) {
         for(int i = 0; i < jTable_ProductList.getRowCount(); i++) {
-            String productId = (String) jTable_ProductList.getValueAt(i, 0);
-            if (ingredientId.trim().equals(productId)) {
+            String productIdInList = (String) jTable_ProductList.getValueAt(i, 0);
+            if (ingredientId.trim().equals(productIdInList)) {
                 return true;
             }
         }
