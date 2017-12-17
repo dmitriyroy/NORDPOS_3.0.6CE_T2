@@ -38,11 +38,13 @@ import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.ticket.CategoryInfo;
 import com.openbravo.pos.ticket.IngredientInfo;
 import com.openbravo.pos.ticket.ProductInfoEdit;
+import static com.openbravo.pos.util.T2FileLogger.writeLog;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -357,7 +359,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jName.setText(Formats.STRING.formatValue(myprod[3]));
         m_jComment.setSelected(((Boolean) myprod[4]));
         m_jScale.setSelected(((Boolean) myprod[5]));
-        m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
+        if((Boolean) myprod[17]){
+            m_jPriceBuy.setText(Formats.CURRENCY.formatValue(m_dSales.getProductPriceBy((String)m_id)));
+        }else{
+            m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
+        }
         setPriceSell(myprod[7]);
         m_CategoryModel.setSelectedKey(myprod[8]);
         taxcatmodel.setSelectedKey(myprod[9]);
@@ -410,8 +416,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jName.setText(Formats.STRING.formatValue(myprod[3]));
         m_jComment.setSelected(((Boolean) myprod[4]));
         m_jScale.setSelected(((Boolean) myprod[5]));
-//        m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
-        m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
+        if((Boolean) myprod[17]){
+            m_jPriceBuy.setText(Formats.CURRENCY.formatValue(m_dSales.getProductPriceBy((String)m_id)));
+         }else{
+            m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
+        }
         setPriceSell(myprod[7]);
         m_CategoryModel.setSelectedKey(myprod[8]);
         taxcatmodel.setSelectedKey(myprod[9]);
@@ -483,6 +492,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         myprod[16] = Formats.BYTEA.parseValue(txtAttributes.getText());
         myprod[17] = jCheckBox_ComplexProduct.isSelected();
 
+//        writeLog(this.getClass().getName(), "myprod : " + Arrays.asList(myprod));
         return myprod;
     }
     
@@ -519,6 +529,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         }
     }  
     public String calculateComplexPriceBy(String id) throws BasicException{
+        writeLog(this.getClass().getName(),"id = " + id + "; isComplex = " + jCheckBox_ComplexProduct.isSelected());
         if(jCheckBox_ComplexProduct.isSelected()){
             m_jPriceBuy.setEditable(false);
             jButton3.setEnabled(true);
@@ -1208,7 +1219,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     }//GEN-LAST:event_m_jPrintLabelActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales, m_id, jTable_ComplexData);
+        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales, m_id, jTable_ComplexData, m_jPriceBuy);
         complexProductsEditor.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
