@@ -186,7 +186,8 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
             }
         });
 
-        jButtonDelete.setBackground(new java.awt.Color(255, 204, 204));
+        jButtonDelete.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jButtonDelete.setForeground(new java.awt.Color(255, 0, 51));
         jButtonDelete.setText(">>>");
         jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -194,7 +195,8 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
             }
         });
 
-        jButtonAdd.setBackground(new java.awt.Color(204, 255, 204));
+        jButtonAdd.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jButtonAdd.setForeground(new java.awt.Color(0, 204, 51));
         jButtonAdd.setText("<<<");
         jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
