@@ -23,7 +23,7 @@ public class T2FileLogger {
 
     public T2FileLogger() {
         filePath = new File("").getAbsolutePath()+"/T2_nordpos.log";
-        simpleDateFormat = new SimpleDateFormat("yyy-MM-dd hh.MM.ss");
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
         if(!new File(filePath).exists()){
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(filePath);
