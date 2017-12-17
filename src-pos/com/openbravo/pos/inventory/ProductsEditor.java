@@ -323,6 +323,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCatalogOrder.setEnabled(false);
         txtAttributes.setEnabled(true);
         jCheckBox_ComplexProduct.setEnabled(true);
+        m_jPriceBuy.setEditable(true);
 
         if (s_GenBarcode.equals("true")) {
             try {
