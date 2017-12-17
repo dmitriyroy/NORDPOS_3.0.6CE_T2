@@ -5,6 +5,7 @@
  */
 package com.openbravo.pos.inventory;
 import com.openbravo.basic.BasicException;
+import com.openbravo.format.Formats;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.ticket.IngredientInfo;
@@ -20,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -39,17 +40,19 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
      */
     private final int FRAME_WIDTH = 500;
     private final int FRAME_HEIGHT = 380;
-    final String[] list1ModelData;
-    List<IngredientInfo> ingredients;
-    List<ProductMini> productMiniList;
-    DataLogicSales m_dSales;
-    String productId;
-    JTable jTable_ComplexData;
+    private final String[] list1ModelData;
+    private List<IngredientInfo> ingredients;
+    private List<ProductMini> productMiniList;
+    private DataLogicSales m_dSales;
+    private String productId;
+    private JTable jTable_ComplexData;
+    private JTextField m_jPriceBuy;
     
-    public ComplexProductsEditor(final DataLogicSales m_dSales, Object id, JTable jTable_ComplexData) {
+    public ComplexProductsEditor(final DataLogicSales m_dSales, Object id, JTable jTable_ComplexData, JTextField m_jPriceBuy) {
         this.m_dSales = m_dSales;
         this.productId = (String) id;
         this.jTable_ComplexData = jTable_ComplexData;
+        this.m_jPriceBuy = m_jPriceBuy;
         initComponents();
         setModalityType(ModalityType.APPLICATION_MODAL);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -128,7 +131,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         String ingredientWeight = (String) jTable_ProductList.getValueAt(jTable_ProductList.getSelectedRow(), 2);
         Double weight = stringToDouble(ingredientWeight);
         try {
-            int countUpdatedRows = m_dSales.updateIngredientIntoRecipe(
+            int countUpdatedRows = m_dSales.updateIngredientInRecipe(
                     this.productId,
                     ingredientId,
                     weight);
@@ -262,6 +265,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
 
     
     private void repaintIngredientTableInProductForm(){
+        m_jPriceBuy.setText(Formats.DOUBLE.formatValue(m_dSales.getProductPriceBy(productId)));
         try {
             List<IngredientInfo> ingredients = m_dSales.getIngredients(productId);
             jTable_ComplexData.setModel(new DefaultTableModel(new String [] {
@@ -287,8 +291,6 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         }
     }
     
-    
-    
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
         
         try {
@@ -301,7 +303,6 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         } catch (BasicException ex) {
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }//GEN-LAST:event_jButtonDeleteActionPerformed
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
