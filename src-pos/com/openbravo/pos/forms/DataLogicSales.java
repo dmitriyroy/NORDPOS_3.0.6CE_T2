@@ -130,16 +130,50 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     // team2 - start
-    public final Double getComplexPriceBy(String id) throws BasicException {
+    public final Double getComplexPriceBy(String complexProductId) throws BasicException {
         return (Double) new StaticSentence(s,
-                "SELECT sum(ifnull(t3.PRICEBUY,0) * ifnull(t2.INGREDIENT_WEIGHT,0)) as \"PRICEBUY\" " +
-                "  FROM PRODUCTS as t1                                                              " +
-                "  JOIN RECIPES  as t2 on t2.PRODUCT_ID = t1.ID                                     " +
-                "  JOIN PRODUCTS as t3 on t3.ID         = t2.INGREDIENT_ID                          " +
-                " WHERE t1.ID = ?                                                                   ",
+                "SELECT sum(ifnull(t3.PRICEBUY,0) * ifnull(t2.INGREDIENT_WEIGHT,0)) / t4.CNT as \"PRICEBUY\"  " +
+                "  FROM PRODUCTS as t1                                                                        " +
+                "  JOIN RECIPES  as t2 on t2.PRODUCT_ID = t1.ID                                               " +
+                "  JOIN PRODUCTS as t3 on t3.ID         = t2.INGREDIENT_ID                                    " +
+                "  JOIN (                                                                                     " +
+                "        SELECT a1.ID,                                                                        " +
+                "		count(*) as \"CNT\"                                                           " +
+                "          FROM PRODUCTS as a1                                                                " +
+                "          JOIN RECIPES  as a2 on a2.PRODUCT_ID = a1.ID                                       " +
+                "          JOIN PRODUCTS as a3 on a3.ID         = a2.INGREDIENT_ID                            " +
+                "         GROUP BY a1.ID                                                                      " +
+                "       ) as t4 on t4.ID = t1.ID                                                              " +
+                " WHERE t1.ID = ?                                                                             ",
                 SerializerWriteString.INSTANCE,
-                SerializerReadDouble.INSTANCE).find(id);
+                SerializerReadDouble.INSTANCE).find(complexProductId);
     }
+    
+    public Integer updateComplexPriceBy(final String complexProductId){
+        writeLog(this.getClass().getName(), "updateComplexPriceBy-1 : complexProductId = " + complexProductId);
+        int countUpdatedRows = 0;
+        try {
+            countUpdatedRows = new PreparedSentence(s
+                    , "UPDATE PRODUCTS        " +
+                      "   SET PRICEBUY = ?    " +
+                      " WHERE ID = ?          "
+                    , SerializerWriteParams.INSTANCE
+            ).exec(new DataParams() {
+                @Override
+                public void writeValues() throws BasicException {
+                    setDouble(1, getComplexPriceBy(complexProductId));
+                    setString(2, complexProductId);
+                }
+            });
+        } catch (BasicException ex) {
+            writeLog(this.getClass().getName(), "updateComplexPriceBy ex = " + ex.getMessage());
+            Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        writeLog(this.getClass().getName(), "updateComplexPriceBy-2 : countUpdatedRows = " + countUpdatedRows);
+        return countUpdatedRows;
+    }
+    
     public final List<IngredientInfo> getIngredients(String id) throws BasicException{
         return new PreparedSentence(s
             ,"SELECT t1.ID,                                     " +
@@ -194,7 +228,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             final Double ingredientWeight) throws BasicException{
         
         try {
-//            writeLog(this.getClass().getName(), "recipeId = " + recipeId);
+//            writeLog(this.getClass().getName(), "addIngredientIntoRecipe recipeId = " + recipeId);
             
             int countInsertedRow = 0;
             int countUpdatedRow = 0;
@@ -210,7 +244,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                                 setString(2, ingredientId);
                             }
                         });
-//            writeLog(this.getClass().getName(), "countIngredientInRecipe = " + countIngredientInRecipe);   
+//            writeLog(this.getClass().getName(), "addIngredientIntoRecipe countIngredientInRecipe = " + countIngredientInRecipe);   
 
             // если ингредиента нет, то добавить его
             if(countIngredientInRecipe == 0){
@@ -242,11 +276,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     }
                 });
             }
-//            writeLog(this.getClass().getName(), "countInsertedRow = " + countInsertedRow);  
-//            writeLog(this.getClass().getName(), "countUpdatetedRow = " + countUpdatedRow);  
             return countInsertedRow;        
         } catch (Exception ex) {
-//            writeLog(this.getClass().getName(), "ex = " + ex.getMessage()); 
+            writeLog(this.getClass().getName(), "addIngredientIntoRecipe ex = " + ex.getMessage()); 
             Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
         }
         return -7;
@@ -267,7 +299,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return countDeletedRow;
     }
     
-    public Integer updateIngredientIntoRecipe(final String productId, final String ingredientId, final Double ingredientWeight) throws BasicException{
+    public Integer updateIngredientInRecipe(final String productId, final String ingredientId, final Double ingredientWeight) throws BasicException{
         int countUpdatedRows = 0;
         countUpdatedRows = new PreparedSentence(s
                         , "UPDATE RECIPES               "
@@ -283,7 +315,25 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         setString(3, ingredientId);
                     }
                 });
+        writeLog(this.getClass().getName(), "countUpdatedRows = " + countUpdatedRows);
+        int updatedRowsComplexPriceBy = updateComplexPriceBy(productId);
+        writeLog(this.getClass().getName(), "updatedRowsComplexPriceBy = " + updatedRowsComplexPriceBy);
         return countUpdatedRows;
+    }
+    
+    public Double getProductPriceBy(String productId) {
+        Double priceBy = 0.0;
+        try {
+            priceBy = (Double) new StaticSentence(s,
+                    "SELECT PRICEBUY      " +
+                    "  FROM PRODUCTS      " +
+                    " WHERE ID = ?        ",
+                    SerializerWriteString.INSTANCE,
+                    SerializerReadDouble.INSTANCE).find(productId);
+        } catch (BasicException ex) {
+            Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return priceBy;
     }
     // team2 - end
 
