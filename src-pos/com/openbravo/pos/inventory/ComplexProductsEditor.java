@@ -67,7 +67,26 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        repaintJTable_ProductList(ingredients);
+//        paintJTable_ProductList(ingredients);
+        jTable_ProductList.setModel(new DefaultTableModel(new String [] {
+                    "ID",
+                    AppLocal.getIntString("column.product"), 
+                    AppLocal.getIntString("column.coefficient")
+                }, ingredients.size()));
+                //}, 1));
+        jTable_ProductList.getColumnModel().getColumn(0).setResizable(false);
+        jTable_ProductList.getColumnModel().getColumn(0).setPreferredWidth(0);
+        jTable_ProductList.getColumnModel().getColumn(0).setMinWidth(0);
+        jTable_ProductList.getColumnModel().getColumn(0).setMaxWidth(0);
+        jTable_ProductList.getColumnModel().getColumn(1).setResizable(false);
+        jTable_ProductList.getColumnModel().getColumn(2).setResizable(false);
+        int row = 0;
+        for (IngredientInfo ingredientInfo : ingredients) {
+            jTable_ProductList.setValueAt(ingredientInfo.getIngredientId(), row, 0);
+            jTable_ProductList.setValueAt(ingredientInfo.getIngredientName(), row, 1);
+            jTable_ProductList.setValueAt(ingredientInfo.getIngredientWeight(), row, 2);
+            row++;
+        }
         
         jTable_ProductList.getModel().addTableModelListener(new TableModelListener(){
             @Override
@@ -89,14 +108,17 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
             list1ModelData[i] = productMiniList.get(i).getIngredientName();
         }
         
+        
         jList_Ingredient.setModel(new javax.swing.AbstractListModel<String>() {
             @Override
             public int getSize() { return list1ModelData.length; }
             @Override
             public String getElementAt(int i) { return list1ModelData[i]; }
         });
+        
     }
     
+       
     private void jTable_ProductListActionPerformed(TableModelEvent e) {
         int selectedRow = jTable_ProductList.getSelectedRow();
         String ingredientId = (String) jTable_ProductList.getValueAt(selectedRow, 0);
@@ -107,40 +129,13 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
                     this.productId,
                     ingredientId,
                     weight);
-//            writeLog(this.getClass().getName(), "countUpdatedRows = " + countUpdatedRows);
+            writeLog(this.getClass().getName(), "countUpdatedRows = " + countUpdatedRows);
         } catch (Exception ex) {
-//            writeLog(this.getClass().getName(), "ex_1 = " + ex.getMessage());
+            writeLog(this.getClass().getName(), "ex_1 = " + ex.getMessage());
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
    
-    private void repaintJTable_ProductList(List<IngredientInfo> ingredients){
-        try{
-            jTable_ProductList.setModel(new DefaultTableModel(new String [] {
-                        "ID",
-                        AppLocal.getIntString("column.product"), 
-                        AppLocal.getIntString("column.coefficient")
-                    }, ingredients.size()));
-            jTable_ProductList.getColumnModel().getColumn(0).setResizable(false);
-            jTable_ProductList.getColumnModel().getColumn(0).setPreferredWidth(0);
-            jTable_ProductList.getColumnModel().getColumn(0).setMinWidth(0);
-            jTable_ProductList.getColumnModel().getColumn(0).setMaxWidth(0);
-            jTable_ProductList.getColumnModel().getColumn(1).setResizable(false);
-            jTable_ProductList.getColumnModel().getColumn(2).setResizable(false);
-            int row = 0;
-            for (IngredientInfo ingredientInfo : ingredients) {
-                jTable_ProductList.setValueAt(ingredientInfo.getIngredientId(), row, 0);
-                jTable_ProductList.setValueAt(ingredientInfo.getIngredientName(), row, 1);
-                jTable_ProductList.setValueAt(ingredientInfo.getIngredientWeight(), row, 2);
-                row++;
-            }
-            
-            jTable_ProductList.setEnabled(true);
-        }catch(Exception ex){
-//            writeLog(this.getClass().getName(), "ex_2 = " + ex.getMessage());
-        }
-        
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -282,14 +277,15 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         
         try {
             int rowId = jTable_ProductList.getSelectedRow();
-            
             String ingredientId = (String) jTable_ProductList.getModel().getValueAt(rowId, 0);
             //TODO @DimaRoy remove record from base by idProduct
+//            writeLog(this.getClass().getName(), "this.productId = " + this.productId +"; idProduct = " + ingredientId);
             int countDeletedRow = m_dSales.deleteIngredientFromRecipe(this.productId,ingredientId);
-            
+//            writeLog(this.getClass().getName(), "countDeletedRow = " + countDeletedRow);
             ((DefaultTableModel)jTable_ProductList.getModel()).removeRow(rowId);
             jTable_ProductList.revalidate();
         } catch (BasicException ex) {
+            writeLog(this.getClass().getName(), "jButtonDeleteActionPerformed ex : " + ex);
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -298,20 +294,18 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
         try {
             // TODO add your handling code here:
-            
             int index = jList_Ingredient.getSelectedIndex();
             String ingredientId = productMiniList.get(index).getId();
             String ingredientName = jList_Ingredient.getSelectedValue();
             //TODO Add to base recep - DONE
-            
             DefaultTableModel model = (DefaultTableModel) jTable_ProductList.getModel();
             if (!existsInTable(ingredientId)) {
                 m_dSales.addIngredientIntoRecipe(this.productId,ingredientId ,0.0);
-                model.addRow(new Object[]{ingredientId,ingredientName ,"0.0"});
                 jTable_ProductList.revalidate();
+                model.addRow(new Object[]{ingredientId,ingredientName ,"0.0"});
             }
-
         } catch (BasicException ex) {
+            writeLog(this.getClass().getName(), "jButtonAddActionPerformed ex : " + ex);
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButtonAddActionPerformed
@@ -332,9 +326,11 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         for(int i = 0; i < jTable_ProductList.getRowCount(); i++) {
             String productId = (String) jTable_ProductList.getValueAt(i, 0);
             if (ingredientId.trim().equals(productId)) {
+                writeLog(this.getClass().getName(), "existsInTable : " + true);
                 return true;
             }
         }
+        writeLog(this.getClass().getName(), "existsInTable : " + false);
         return false;
     }
     
