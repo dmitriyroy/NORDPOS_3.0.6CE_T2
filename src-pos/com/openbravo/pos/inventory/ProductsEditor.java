@@ -1208,7 +1208,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     }//GEN-LAST:event_m_jPrintLabelActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        //new ComplexProductEditor().setVisible(true);
         ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales, m_id, jTable_ComplexData);
         complexProductsEditor.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
