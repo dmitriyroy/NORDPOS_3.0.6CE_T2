@@ -262,6 +262,12 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        repaintIngredientTableInProductForm();
+        dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    
+    private void repaintIngredientTableInProductForm(){
         try {
             List<IngredientInfo> ingredients = m_dSales.getIngredients(productId);
             jTable_ComplexData.setModel(new DefaultTableModel(new String [] {
@@ -282,15 +288,11 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
                 jTable_ComplexData.setValueAt(ingredient.getIngredientWeight(), row, 2);
                 row++;
             }
-            jTable_ComplexData.revalidate();
-            jTable_ComplexData.repaint();
-            
-            dispose();
         } catch (BasicException ex) {
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
-
+    }
+    
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
         
         try {
