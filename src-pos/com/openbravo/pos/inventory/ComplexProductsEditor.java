@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -40,10 +42,12 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     List<ProductMini> productMiniList;
     DataLogicSales m_dSales;
     String productId;
+    JTable jTable_ComplexData;
     
-    public ComplexProductsEditor(final DataLogicSales m_dSales, Object id) {
+    public ComplexProductsEditor(final DataLogicSales m_dSales, Object id, JTable jTable_ComplexData) {
         this.m_dSales = m_dSales;
         this.productId = (String) id;
+        this.jTable_ComplexData = jTable_ComplexData;
         initComponents();
         setModalityType(ModalityType.APPLICATION_MODAL);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -258,7 +262,33 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        dispose();
+        try {
+            List<IngredientInfo> ingredients = m_dSales.getIngredients(productId);
+            jTable_ComplexData.setModel(new DefaultTableModel(new String [] {
+                "ID",
+                AppLocal.getIntString("column.product"),
+                AppLocal.getIntString("column.coefficient")
+            }, ingredients.size()));
+            jTable_ComplexData.getColumnModel().getColumn(0).setResizable(false);
+            jTable_ComplexData.getColumnModel().getColumn(0).setPreferredWidth(0);
+            jTable_ComplexData.getColumnModel().getColumn(0).setMinWidth(0);
+            jTable_ComplexData.getColumnModel().getColumn(0).setMaxWidth(0);
+            jTable_ComplexData.getColumnModel().getColumn(1).setResizable(false);
+            jTable_ComplexData.getColumnModel().getColumn(2).setResizable(false);
+            int row = 0;
+            for (IngredientInfo ingredient : ingredients) {
+                jTable_ComplexData.setValueAt(ingredient.getId(), row, 0);
+                jTable_ComplexData.setValueAt(ingredient.getIngredientName(), row, 1);
+                jTable_ComplexData.setValueAt(ingredient.getIngredientWeight(), row, 2);
+                row++;
+            }
+            jTable_ComplexData.revalidate();
+            jTable_ComplexData.repaint();
+            
+            dispose();
+        } catch (BasicException ex) {
+            Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
