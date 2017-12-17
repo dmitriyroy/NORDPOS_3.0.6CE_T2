@@ -150,7 +150,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
     
     public Integer updateComplexPriceBy(final String complexProductId){
-        writeLog(this.getClass().getName(), "updateComplexPriceBy-1 : complexProductId = " + complexProductId);
+//        writeLog(this.getClass().getName(), "updateComplexPriceBy-1 : complexProductId = " + complexProductId);
         int countUpdatedRows = 0;
         try {
             countUpdatedRows = new PreparedSentence(s
@@ -166,11 +166,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 }
             });
         } catch (BasicException ex) {
-            writeLog(this.getClass().getName(), "updateComplexPriceBy ex = " + ex.getMessage());
+//            writeLog(this.getClass().getName(), "updateComplexPriceBy ex = " + ex.getMessage());
             Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        writeLog(this.getClass().getName(), "updateComplexPriceBy-2 : countUpdatedRows = " + countUpdatedRows);
+//        writeLog(this.getClass().getName(), "updateComplexPriceBy-2 : countUpdatedRows = " + countUpdatedRows);
         return countUpdatedRows;
     }
     
@@ -278,7 +278,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             }
             return countInsertedRow;        
         } catch (Exception ex) {
-            writeLog(this.getClass().getName(), "addIngredientIntoRecipe ex = " + ex.getMessage()); 
+//            writeLog(this.getClass().getName(), "addIngredientIntoRecipe ex = " + ex.getMessage()); 
             Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
         }
         return -7;
@@ -315,9 +315,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         setString(3, ingredientId);
                     }
                 });
-        writeLog(this.getClass().getName(), "countUpdatedRows = " + countUpdatedRows);
         int updatedRowsComplexPriceBy = updateComplexPriceBy(productId);
-        writeLog(this.getClass().getName(), "updatedRowsComplexPriceBy = " + updatedRowsComplexPriceBy);
         return countUpdatedRows;
     }
     
