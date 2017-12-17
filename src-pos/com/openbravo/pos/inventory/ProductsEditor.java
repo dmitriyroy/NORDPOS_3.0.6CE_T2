@@ -1039,24 +1039,9 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jLabel_ComplexProduct.setBounds(10, 170, 150, 20);
 
         jTable_ComplexData.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                //                {"Кофе", "0,25"},
-                //                {"Сахар", "0,02"},
-                //                {"Молоко", "0,03"},
-                //                {"Молоко1", "0,03"},
-                //                {"Молоко2", "0,03"},
-                //                {"Молоко3", "0,03"},
-                //                {"Молоко4", "0,03"},
-                //                {"Молоко5", "0,03"},
-                //                {"Молоко6", "0,03"},
-                //                {"Молоко7", "0,03"},
-                //        {"Молоко8", "0,03"}
-            }
-            //    null
+            new Object [][] { }
             ,
-            new String [] {
-                //        "Продукт", "Коэфициент"
-            }
+            new String [] {}
         ));
         jTable_ComplexData.setEnabled(false);
         jScrollPane3.setViewportView(jTable_ComplexData);
@@ -1223,7 +1208,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         //new ComplexProductEditor().setVisible(true);
-        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales, m_id);
+        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales, m_id/*, jTable_ComplexData*/);
         complexProductsEditor.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 

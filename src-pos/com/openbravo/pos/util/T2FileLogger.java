@@ -17,20 +17,25 @@ import java.util.logging.Logger;
  *
  * @author dmitriyroy
  */
-public class T2Logger {
+public class T2FileLogger {
     
     static String filePath;
     static SimpleDateFormat simpleDateFormat;
 
-    public T2Logger() {
+    public T2FileLogger() {
         filePath = new File("").getAbsolutePath()+"/T2_nordpos.log";
         simpleDateFormat = new SimpleDateFormat("yyy-MM-dd hh.MM.ss");
         if(!new File(filePath).exists()){
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(filePath);
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(T2Logger.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(T2FileLogger.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        try {
+            Files.write(Paths.get(filePath), (simpleDateFormat.format(new Date()) + " : ---------------------------------------------------------------------------------\n").getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException ex) {
+            Logger.getLogger(T2FileLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

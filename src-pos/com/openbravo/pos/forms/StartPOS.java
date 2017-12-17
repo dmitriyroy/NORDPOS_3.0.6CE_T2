@@ -23,7 +23,7 @@ import com.nordpos.server.jetty.AppContextBuilder;
 import com.nordpos.server.jetty.ServerApp;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.instance.InstanceQuery;
-import com.openbravo.pos.util.T2Logger;
+import com.openbravo.pos.util.T2FileLogger;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -57,7 +57,7 @@ public class StartPOS {
     private static final String DEFAULT_WEBAPPSEVER_FOLDER = new File("webapps/").getAbsolutePath();
     
     // team2
-    private static final T2Logger T2Logger = new T2Logger();
+    private static final T2FileLogger T2Logger = new T2FileLogger();
 
     private StartPOS() {
     }

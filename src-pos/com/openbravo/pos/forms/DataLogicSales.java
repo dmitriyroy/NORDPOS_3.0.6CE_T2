@@ -42,8 +42,8 @@ import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
-import com.openbravo.pos.util.T2Logger;
-import static com.openbravo.pos.util.T2Logger.writeLog;
+import com.openbravo.pos.util.T2FileLogger;
+import static com.openbravo.pos.util.T2FileLogger.writeLog;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -202,6 +202,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             writeLog(this.getClass().getName(), "recipeId = " + recipeId);
             
             int countInsertedRow = 0;
+            int countUpdatedRow = 0;
             int countIngredientInRecipe = 0;
             // проверить есть ли ингредиент в рецепте
             countIngredientInRecipe = (Integer) new StaticSentence(s,
@@ -231,7 +232,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     }
                 });
             }else{
-                countInsertedRow = new PreparedSentence(s
+                countUpdatedRow = new PreparedSentence(s
                         , "UPDATE RECIPES               "
                         + "   SET INGREDIENT_WEIGHT = ? "
                         + " WHERE PRODUCT_ID        = ? "
@@ -246,6 +247,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     }
                 });
             }
+            writeLog(this.getClass().getName(), "countInsertedRow = " + countInsertedRow);  
+            writeLog(this.getClass().getName(), "countUpdatetedRow = " + countUpdatedRow);  
             return countInsertedRow;        
         } catch (Exception ex) {
             writeLog(this.getClass().getName(), "ex = " + ex.getMessage()); 
@@ -253,8 +256,41 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
         return -7;
     }
+
+    public Integer deleteIngredientFromRecipe(final String productId, final String ingredientId) throws BasicException {
+        int countDeletedRow = 0;
+        countDeletedRow = new PreparedSentence(s
+                , "DELETE FROM RECIPES WHERE PRODUCT_ID = ? AND INGREDIENT_ID = ?"
+                , SerializerWriteParams.INSTANCE
+                ).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setString(1, productId);
+                        setString(2, ingredientId);
+                    }
+                });
+        return countDeletedRow;
+    }
     
-//    public Integer 
+    public Integer updateIngredientIntoRecipe(final String productId, final String ingredientId, final Double ingredientWeight) throws BasicException{
+        writeLog(this.getClass().getName(), "productId = " + productId + "; ingredientId = " + ingredientId + "; ingredientWeight = " + ingredientWeight);
+        int countUpdatedRows = 0;
+        countUpdatedRows = new PreparedSentence(s
+                        , "UPDATE RECIPES               "
+                        + "   SET INGREDIENT_WEIGHT = ? "
+                        + " WHERE PRODUCT_ID        = ? "
+                        + "   AND INGREDIENT_ID     = ? "
+                        , SerializerWriteParams.INSTANCE
+                ).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setDouble(1, ingredientWeight);
+                        setString(2, productId);
+                        setString(3, ingredientId);
+                    }
+                });
+        return countUpdatedRows;
+    }
     // team2 - end
 
     // Catalogo de productos
