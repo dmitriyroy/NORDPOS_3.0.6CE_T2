@@ -150,9 +150,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jList_Ingredient.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = {
-                //"Продукт1", "Продукт2", "Продукт3", "Продукт4", "Продукт5"
-            };
+            String[] strings = {};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
@@ -163,22 +161,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
         jLabel2.setText(AppLocal.getIntString("editRecept.available"));
 
         jTable_ProductList.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                //        {"Кофе", "0,25"},
-                //        {"Сахар", "0,02"},
-                //        {"Молоко", "0,03"},
-                //        {"Молоко1", "0,03"},
-                //        {"Молоко2", "0,03"},
-                //        {"Молоко3", "0,03"},
-                //        {"Молоко4", "0,03"},
-                //        {"Молоко5", "0,03"},
-                //        {"Молоко6", "0,03"},
-                //        {"Молоко7", "0,03"},
-                //        {"Молоко8", "0,03"}
-            },
-            /*new String [] {
-                "Продукт", "Коэфициент"
-            }*/
+            new Object [][] {},
             new String [] {
                 AppLocal.getIntString("column.product"),
                 AppLocal.getIntString("column.coefficient")
