@@ -67,7 +67,6 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
                     AppLocal.getIntString("column.product"), 
                     AppLocal.getIntString("column.coefficient")
                 }, ingredients.size()));
-                //}, 1));
         jTable_ProductList.getColumnModel().getColumn(0).setResizable(false);
         jTable_ProductList.getColumnModel().getColumn(0).setPreferredWidth(0);
         jTable_ProductList.getColumnModel().getColumn(0).setMinWidth(0);
@@ -288,8 +287,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
             if (!existsInTable(ingredientId)) {
                 m_dSales.addIngredientIntoRecipe(this.productId,ingredientId ,0.0);
                 jTable_ProductList.revalidate();
-                model.addRow(new Object[]{ingredientId,ingredientName ,"0.0"});
-//                jTable_ProductList.revalidate();
+                model.addRow(new Object[]{ingredientId,ingredientName ,"0"});
                 jTable_ProductList.repaint();
                 
             }
