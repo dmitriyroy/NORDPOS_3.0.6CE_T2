@@ -57,7 +57,7 @@ public class StartPOS {
     private static final String DEFAULT_WEBAPPSEVER_FOLDER = new File("webapps/").getAbsolutePath();
     
     // team2
-    private static final T2FileLogger T2Logger = new T2FileLogger();
+//    private static final T2FileLogger T2Logger = new T2FileLogger();
 
     private StartPOS() {
     }
