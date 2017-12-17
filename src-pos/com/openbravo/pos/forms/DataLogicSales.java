@@ -273,7 +273,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
     
     public Integer updateIngredientIntoRecipe(final String productId, final String ingredientId, final Double ingredientWeight) throws BasicException{
-        writeLog(this.getClass().getName(), "productId = " + productId + "; ingredientId = " + ingredientId + "; ingredientWeight = " + ingredientWeight);
         int countUpdatedRows = 0;
         countUpdatedRows = new PreparedSentence(s
                         , "UPDATE RECIPES               "

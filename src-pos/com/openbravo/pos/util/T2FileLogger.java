@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -33,7 +32,7 @@ public class T2FileLogger {
             }
         }
         try {
-            Files.write(Paths.get(filePath), (simpleDateFormat.format(new Date()) + " : ---------------------------------------------------------------------------------\n").getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get(filePath), (simpleDateFormat.format(new Date()) + " : -------------------------  START  -------------------------\n").getBytes(), StandardOpenOption.APPEND);
         } catch (IOException ex) {
             Logger.getLogger(T2FileLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
