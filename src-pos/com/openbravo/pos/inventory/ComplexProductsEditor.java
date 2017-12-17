@@ -125,7 +125,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
                     this.productId,
                     ingredientId,
                     weight);
-        } catch (Exception ex) {
+        } catch (BasicException ex) {
             Logger.getLogger(ComplexProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
