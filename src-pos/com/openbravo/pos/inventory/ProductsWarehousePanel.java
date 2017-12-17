@@ -82,7 +82,7 @@ public class ProductsWarehousePanel extends JPanelTableExt {
                 "LEFT OUTER JOIN (SELECT PRODUCT, SUM(UNITS) AS SUMUNITS FROM STOCKCURRENT WHERE LOCATION = ? GROUP BY PRODUCT) S ON P.ID = S.PRODUCT " +
                 "LEFT OUTER JOIN (" +  
                 " SELECT t1.ID,   " +
-                "        floor(min(ifnull(t2.UNITS,0) / ifnull(t3.INGREDIENT_WEIGHT,1)))  as COMPLEX_GUANTITY  " +
+                "        floor(min(ifnull(t2.UNITS,0) / ifnull(t3.INGREDIENT_WEIGHT,1)))  as \"COMPLEX_GUANTITY\"  " +
                 "   FROM PRODUCTS      as t1                                  " +
                 "  JOIN RECIPES       as t3 on t3.PRODUCT_ID = t1.ID         " +
                 "  JOIN stockcurrent  as t2 on t2.PRODUCT = t3.INGREDIENT_ID " +
