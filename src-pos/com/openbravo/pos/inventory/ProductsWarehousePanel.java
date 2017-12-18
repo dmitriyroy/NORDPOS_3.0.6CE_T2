@@ -69,8 +69,8 @@ public class ProductsWarehousePanel extends JPanelTableExt {
                 new Field("STOCKSECURITY", Datas.DOUBLE, Formats.DOUBLE),
                 new Field("STOCKMAXIMUM", Datas.DOUBLE, Formats.DOUBLE),
                 new Field("UNITS", Datas.DOUBLE, Formats.DOUBLE),
-                new Field("ISCOMPLEX", Datas.BOOLEAN, Formats.BOOLEAN)
-                ,new Field("COMPLEX_GUANTITY", Datas.INT, Formats.INT)
+                new Field("ISCOMPLEX", Datas.BOOLEAN, Formats.BOOLEAN),
+                new Field("COMPLEX_GUANTITY", Datas.INT, Formats.INT)
         );
 
         lpr = new ListProviderCreator(new PreparedSentence(app.getSession(),
@@ -88,7 +88,7 @@ public class ProductsWarehousePanel extends JPanelTableExt {
                 "  JOIN stockcurrent  as t2 on t2.PRODUCT = t3.INGREDIENT_ID " +
                 " ) as D ON P.ID = D.ID " + 
                 "ORDER BY P.NAME",
-                new SerializerWriteBasicExt(new Datas[] {Datas.OBJECT, Datas.STRING}, new int[]{1, 1}),
+                new SerializerWriteBasicExt(new Datas[] {Datas.STRING, Datas.STRING}, new int[]{1, 1}),
                 new WarehouseSerializerRead()
                 ),
                 m_paramslocation);
