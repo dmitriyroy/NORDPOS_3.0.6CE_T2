@@ -14,12 +14,12 @@ public class ProductMini {
     
     private String id;
     private String ingredientName;
-    private Double ingredientWeight;
+    private Boolean isComlex;
 
-    public ProductMini(String id, String ingredientName, Double ingredientWeight) {
+    public ProductMini(String id, String ingredientName, Boolean isComlex) {
         this.id = id;
         this.ingredientName = ingredientName;
-        this.ingredientWeight = ingredientWeight;
+        this.isComlex = isComlex;
     }
 
     public String getId() {
@@ -38,13 +38,14 @@ public class ProductMini {
         this.ingredientName = ingredientName;
     }
 
-    public Double getIngredientWeight() {
-        return ingredientWeight;
+    public Boolean getIsComlex() {
+        return isComlex;
     }
 
-    public void setIngredientWeight(Double ingredientWeight) {
-        this.ingredientWeight = ingredientWeight;
+    public void setIsComlex(Boolean isComlex) {
+        this.isComlex = isComlex;
     }
+
     
     public static SerializerRead getSerializerRead() {
         return new SerializerRead() {
@@ -53,16 +54,14 @@ public class ProductMini {
                 return new ProductMini(
                         dr.getString(1),
                         dr.getString(2),
-                        dr.getDouble(3));
+                        dr.getBoolean(3));
             }
         };
     }
 
     @Override
     public String toString() {
-        return "ProductMini{" + "id=" + id + ", ingredientName=" + ingredientName + ", ingredientWeight=" + ingredientWeight + '}';
+        return "ProductMini{" + "id=" + id + ", ingredientName=" + ingredientName + ", isComlex=" + isComlex + '}';
     }
-
-    
     
 }

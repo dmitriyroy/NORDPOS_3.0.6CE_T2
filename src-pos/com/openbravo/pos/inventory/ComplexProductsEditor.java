@@ -110,7 +110,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
             list1ModelData[i] = productMiniList.get(i).getIngredientName();
         }
         
-        jList_Ingredient.setModel(new javax.swing.AbstractListModel<String>() {
+        jList_AllNonComplexProduct.setModel(new javax.swing.AbstractListModel<String>() {
             @Override
             public int getSize() { return list1ModelData.length; }
             @Override
@@ -150,7 +150,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     private void initComponents() {
 
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList_Ingredient = new javax.swing.JList<>();
+        jList_AllNonComplexProduct = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -161,12 +161,12 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jList_Ingredient.setModel(new javax.swing.AbstractListModel<String>() {
+        jList_AllNonComplexProduct.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane2.setViewportView(jList_Ingredient);
+        jScrollPane2.setViewportView(jList_AllNonComplexProduct);
 
         jLabel1.setText(AppLocal.getIntString("editRecept.toRecept"));
 
@@ -308,9 +308,9 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
         try {
             // TODO add your handling code here:
-            int index = jList_Ingredient.getSelectedIndex();
+            int index = jList_AllNonComplexProduct.getSelectedIndex();
             String ingredientId = productMiniList.get(index).getId();
-            String ingredientName = jList_Ingredient.getSelectedValue();
+            String ingredientName = jList_AllNonComplexProduct.getSelectedValue();
             //TODO Add to base recep - DONE
             DefaultTableModel model = (DefaultTableModel) jTable_ProductList.getModel();
             if (!existsInTable(ingredientId)) {
@@ -331,7 +331,7 @@ public class ComplexProductsEditor extends javax.swing.JDialog {
     private javax.swing.JButton jButtonDelete;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList<String> jList_Ingredient;
+    private javax.swing.JList<String> jList_AllNonComplexProduct;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable_ProductList;

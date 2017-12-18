@@ -187,35 +187,32 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     public final List<ProductMini> getAllProductName() throws BasicException{
         return new PreparedSentence(s
-            , "SELECT t1.ID,                                    "
-            + "       t1.NAME,                                  "
-            + "       t2.INGREDIENT_WEIGHT                      "
-            + "  FROM PRODUCTS as t1                            "
-            + "  LEFT OUTER JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
+            , "SELECT ID,                                   "
+            + "       NAME,                                 "
+            + "       ISCOMPLEX                             "
+            + "  FROM PRODUCTS                              "
             , null
             , ProductMini.getSerializerRead()).list();
     }
 
     public final List<ProductMini> getAllProductNameComplex() throws BasicException{
         return new PreparedSentence(s
-            , "SELECT t1.ID,                                    "
-            + "       t1.NAME,                                  "
-            + "       t2.INGREDIENT_WEIGHT                      "
-            + "  FROM PRODUCTS as t1                            "
-            + "  LEFT OUTER JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
-            + " WHERE t1.ISCOMPLEX = true                       "
+            , "SELECT ID,                                   "
+            + "       NAME,                                 "
+            + "       ISCOMPLEX                             "
+            + "  FROM PRODUCTS                              "
+            + " WHERE ISCOMPLEX = true                      "
             , null
             , ProductMini.getSerializerRead()).list();
     }
 
     public final List<ProductMini> getAllProductNameNonComplex() throws BasicException{
         return new PreparedSentence(s
-            , "SELECT t1.ID,                                   "
-            + "       t1.NAME,                                 "
-            + "       t2.INGREDIENT_WEIGHT                     "
-            + "  FROM PRODUCTS as t1                           "
-            + " LEFT OUTER JOIN RECIPES as t2 on t2.INGREDIENT_ID = t1.ID "
-            + " WHERE t1.ISCOMPLEX = false                     "
+            , "SELECT ID,                                   "
+            + "       NAME,                                 "
+            + "       ISCOMPLEX                             "
+            + "  FROM PRODUCTS                              "
+            + " WHERE ISCOMPLEX = false                     "
             , null
             , ProductMini.getSerializerRead()).list();
     }
@@ -224,8 +221,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             int countInsertedRow = 0;
             int countUpdatedRow = 0;
             int countIngredientInRecipe = 0;
-
-//            int countExistProduct = 0;
         try {
             // проверить есть ли ингредиент в рецепте
             countIngredientInRecipe = (Integer) new StaticSentence(s,
