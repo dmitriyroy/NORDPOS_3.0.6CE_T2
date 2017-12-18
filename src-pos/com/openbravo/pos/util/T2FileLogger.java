@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * @author dmitriyroy
  */
 public class T2FileLogger {
-    
+
     static String filePath;
     static SimpleDateFormat simpleDateFormat;
 
@@ -37,10 +37,19 @@ public class T2FileLogger {
             Logger.getLogger(T2FileLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public static void writeLog(String className, String str){  
+
+    public static void writeLog(String className, String str){
         try {
             Files.write(Paths.get(filePath), (className + " : " + simpleDateFormat.format(new Date()) + " : " + str + "\n").getBytes(), StandardOpenOption.APPEND);
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    public static void writeLog(Object loggingClass, String str){
+        try {
+            Files.write(Paths.get(filePath), (loggingClass.getClass().getName() + " : " + simpleDateFormat.format(new Date()) + " : " + str + "\n").getBytes(), StandardOpenOption.APPEND);
         }
         catch (IOException e) {
             System.out.println(e);
