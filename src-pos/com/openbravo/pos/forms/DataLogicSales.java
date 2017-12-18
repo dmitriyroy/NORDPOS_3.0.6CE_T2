@@ -191,6 +191,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             + "       NAME,                                 "
             + "       ISCOMPLEX                             "
             + "  FROM PRODUCTS                              "
+            + "  ORDER BY NAME ASC                          "
             , null
             , ProductMini.getSerializerRead()).list();
     }
@@ -202,6 +203,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             + "       ISCOMPLEX                             "
             + "  FROM PRODUCTS                              "
             + " WHERE ISCOMPLEX = true                      "
+            + " ORDER BY NAME ASC                           "
             , null
             , ProductMini.getSerializerRead()).list();
     }
@@ -213,6 +215,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             + "       ISCOMPLEX                             "
             + "  FROM PRODUCTS                              "
             + " WHERE ISCOMPLEX = false                     "
+            + " ORDER BY NAME ASC                          "
             , null
             , ProductMini.getSerializerRead()).list();
     }
@@ -322,7 +325,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return priceBy;
     }
 
-
     public final SentenceExec insertNewComplexProduct(final Object[] newComplexProductData) {
         return new SentenceExecTransaction(s) {
             @Override
@@ -350,6 +352,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         setBoolean(16, (Boolean)newComplexProductData[15]);     //ISCOMPLEX
                     }
                 });
+                    
                     if (i > 0 && ((Boolean)newComplexProductData[16])) {
                         return new PreparedSentence(s
                             , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
@@ -957,9 +960,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 // получить ID всех ингредиентов
                 List<String> ingredientesId = new PreparedSentence(s
                     ,"SELECT distinct                            " +
-                     "	     INGREDIENT_ID                       " +
+                     "	     PRODUCT_ID                       " +
                      "  FROM RECIPES                             " +
-                     " WHERE PRODUCT_ID =  ?                     "
+                     " WHERE INGREDIENT_ID =  ?                     "
                     , SerializerWriteString.INSTANCE
 //                    , SerializerReadString.INSTANCE).list((String)((Object[]) params)[4]);
                     , SerializerReadString.INSTANCE).list((String)((Object[]) params)[4]);
