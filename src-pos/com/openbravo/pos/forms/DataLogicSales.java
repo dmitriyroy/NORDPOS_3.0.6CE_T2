@@ -220,15 +220,12 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , ProductMini.getSerializerRead()).list();
     }
 
-    public Integer addIngredientIntoRecipe(final String recipeId,
-            final String ingredientId,
-            final Double ingredientWeight) throws BasicException{
-
+    public Integer addIngredientIntoRecipe(final String recipeId,final String ingredientId,final Double ingredientWeight) throws BasicException{
             int countInsertedRow = 0;
             int countUpdatedRow = 0;
             int countIngredientInRecipe = 0;
 
-            int countExistProduct = 0;
+//            int countExistProduct = 0;
         try {
             // проверить есть ли ингредиент в рецепте
             countIngredientInRecipe = (Integer) new StaticSentence(s,
@@ -241,7 +238,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                                 setString(2, ingredientId);
                             }
                         });
-            writeLog(this.getClass().getName(), "addIngredientIntoRecipe countIngredientInRecipe = " + countIngredientInRecipe);
 
             // если ингредиента нет, то добавить его
             if(countIngredientInRecipe == 0){
@@ -274,7 +270,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 });
             }
             return countInsertedRow;
-        } catch (Exception ex) {
+        } catch (BasicException ex) {
             writeLog(this.getClass().getName(), "addIngredientIntoRecipe ex = " + ex.getMessage());
             Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -333,19 +329,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
 
     public final SentenceExec insertNewComplexProduct(final Object[] newComplexProductData) {
-                    Object[] values = (Object[]) newComplexProductData;
-                    for (int i=0; i<values.length; i++) {
-                        writeLog(this,"---000---value[" + i + "] : " + values[i]);
-                    }
         return new SentenceExecTransaction(s) {
             @Override
             public int execInTransaction(Object params) throws BasicException {
-                try{
-                    Object[] values = (Object[]) newComplexProductData;
-                    for (int i=0; i<values.length; i++) {
-                        writeLog(this,"value[" + i + "] : " + values[i]);
-                    }
-
                     int i = new PreparedSentence(s
                         , "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, ATTRIBUTESET_ID, IMAGE, STOCKCOST, STOCKVOLUME, ATTRIBUTES, ISCOMPLEX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                         , SerializerWriteParams.INSTANCE).exec(new DataParams() {
@@ -362,10 +348,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         setString(9, (String)newComplexProductData[8]);         //CATEGORY,
                         setString(10, (String)newComplexProductData[9]);        //TAXCAT
                         setString(11, (String)newComplexProductData[10]);       //ATTRIBUTESET_ID,  // null
-                        setObject(12,  newComplexProductData[11]);   //IMAGE,            // null
+                        setObject(12,  newComplexProductData[11]);              //IMAGE,            // null
                         setDouble(13, (Double)newComplexProductData[12]);       //STOCKCOST,        // null
                         setDouble(14, (Double)newComplexProductData[13]);       //STOCKVOLUME,      // null
-                        setObject(15,  newComplexProductData[14]);   //ATTRIBUTES,       // null
+                        setObject(15,  newComplexProductData[14]);              //ATTRIBUTES,       // null
                         setBoolean(16, (Boolean)newComplexProductData[15]);     //ISCOMPLEX
                     }
                 });
@@ -382,10 +368,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     } else {
                         return i;
                     }
-                }catch(Exception ex){
-                    writeLog(this,"insertNewComplexProduct | execInTransaction | ex : " + ex.getMessage() );
-                }
-                return -7;
             }
         };
     }
@@ -867,14 +849,42 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             @Override
             public int execInTransaction(Object params) throws BasicException {
                 Object[] values = (Object[]) params;
-                int i = new PreparedSentence(s
-                    , "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, ATTRIBUTESET_ID, IMAGE, STOCKCOST, STOCKVOLUME, ATTRIBUTES, ISCOMPLEX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17})).exec(params);
-                if (i > 0 && ((Boolean)values[14])) {
-                    return new PreparedSentence(s
-                        , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
-                        , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0, 15})).exec(params);
+                // если такой продукт уже есть, то делать UPDATE
+                // эта ситуация возможна при заведении комплексного продукта
+                int countPronuct = (Integer) new StaticSentence(s,
+                        "SELECT COUNT(*) FROM PRODUCTS WHERE ID = ?",
+                        SerializerWriteString.INSTANCE,
+                        SerializerReadInteger.INSTANCE).find((String)values[0]);
+                if(countPronuct == 0){
+                    int i = new PreparedSentence(s
+                        , "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, ATTRIBUTESET_ID, IMAGE, STOCKCOST, STOCKVOLUME, ATTRIBUTES, ISCOMPLEX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                        , new SerializerWriteBasicExt(productsRow.getDatas(), new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17})).exec(params);
+                    if (i > 0 && ((Boolean)values[14])) {
+                        return new PreparedSentence(s
+                            , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
+                            , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0, 15})).exec(params);
                 } else {
+                    return i;
+                }
+                }else{
+                    int i = new PreparedSentence(s
+                    , "UPDATE PRODUCTS SET ID = ?, REFERENCE = ?, CODE = ?, NAME = ?, ISCOM = ?, ISSCALE = ?, PRICEBUY = ?, PRICESELL = ?, CATEGORY = ?, TAXCAT = ?, ATTRIBUTESET_ID = ?, IMAGE = ?, STOCKCOST = ?, STOCKVOLUME = ?, ATTRIBUTES = ?, ISCOMPLEX = ? WHERE ID = ?"
+                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 0})).exec(params);
+                    if (i > 0) {
+                        if (((Boolean)values[14])) {
+                            if (new PreparedSentence(s
+                                    , "UPDATE PRODUCTS_CAT SET CATORDER = ? WHERE PRODUCT = ?"
+                                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {15, 0})).exec(params) == 0) {
+                                new PreparedSentence(s
+                                    , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
+                                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0, 15})).exec(params);
+                            }
+                        } else {
+                            new PreparedSentence(s
+                                , "DELETE FROM PRODUCTS_CAT WHERE PRODUCT = ?"
+                                , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0})).exec(params);
+                        }
+                    }
                     return i;
                 }
             }

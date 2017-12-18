@@ -45,7 +45,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -493,7 +492,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         myprod[16] = Formats.BYTEA.parseValue(txtAttributes.getText());
         myprod[17] = jCheckBox_ComplexProduct.isSelected();
 
-//        writeLog(this.getClass().getName(), "myprod : " + Arrays.asList(myprod));
         return myprod;
     }
 
@@ -530,7 +528,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         }
     }
     public String calculateComplexPriceBy(String id) throws BasicException{
-//        writeLog(this.getClass().getName(),"id = " + id + "; isComplex = " + jCheckBox_ComplexProduct.isSelected());
         if(jCheckBox_ComplexProduct.isSelected()){
             m_jPriceBuy.setEditable(false);
             jButton3.setEnabled(true);
@@ -1228,75 +1225,50 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         if (jCheckBox_ComplexProduct.isSelected()) {
             // TODO new ComplexProdust
             // проверить, есть ли такой продукт в базе
-//            m_dSales.getProductInfo(s_GenRef)
-//            m_id
-           if(m_id == null){
-               m_id = UUID.randomUUID().toString();
-           }
-writeLog(this,"jCheckBox_ComplexProductActionPerformed s_GenRef = " + s_GenRef);
-writeLog(this,"jCheckBox_ComplexProductActionPerformed m_id = " + m_id);
+            if(m_id == null){
+                m_id = UUID.randomUUID().toString();
+            }
             try {
                 ProductInfoExt productInfoExt = m_dSales.getProductInfo((String) m_id);
                 if(productInfoExt == null){
-writeLog(this,"jCheckBox_ComplexProductActionPerformed must add new product");
-writeLog(this, "m_id : " + m_id);
-writeLog(this, "m_jRef.getText() : " + m_jRef.getText());
-writeLog(this, "m_jCode.getText() : " + m_jCode.getText());
-writeLog(this, "m_jName.getText() : " + (m_jName.getText() == null ? "" : m_jName.getText()));
-writeLog(this, "m_jComment.isSelected() : " + m_jComment.isSelected());
-writeLog(this, "m_jScale.isSelected() : " + m_jScale.isSelected());
-writeLog(this, "m_jPriceSell.getText() : " + (m_jPriceSell.getText() != null && !m_jPriceSell.getText().trim().equals("") ? Double.parseDouble(m_jPriceSell.getText()) : 0.0));
-writeLog(this, "m_jCategory.getModel().getSelectedItem() : " + m_jCategory.getModel().getSelectedItem());
-writeLog(this, "m_jCategory.getModel().getSelectedItem().getClass() : " + m_jCategory.getModel().getSelectedItem().getClass());
-writeLog(this, "m_jCategory.getModel().getSelectedItem().getCode() : " + ((CategoryInfo)m_jCategory.getModel().getSelectedItem()).getCode());
-writeLog(this, "m_jTax.getModel().getSelectedItem() : " + m_jTax.getModel().getSelectedItem());
-writeLog(this, "m_jTax.getModel().getSelectedItem().getClass() : " + m_jTax.getModel().getSelectedItem().getClass());
-writeLog(this, "m_jTax.getModel().getSelectedItem().getClass() : " + ((TaxCategoryInfo)m_jTax.getModel().getSelectedItem()).getID());
-writeLog(this, "jCheckBox_ComplexProduct.isSelected() : " + jCheckBox_ComplexProduct.isSelected());
-Object[] newComplexProductData = new Object[]{
-//                    setString(1, (String)newComplexProductData[0]);         //ID,
-                    m_id,
-//                    setString(2, (String)newComplexProductData[1]);         //REFERENCE,
-                    m_jRef.getText(),
-//                    setString(3, (String)newComplexProductData[2]);         //CODE,
-                    m_jCode.getText(),
-//                    setString(4, (String)newComplexProductData[3]);         //NAME,
-                    m_jName.getText() == null ? "" : m_jName.getText(),
-//                    setBoolean(5, (Boolean)newComplexProductData[4]);       //ISCOM,
-                    m_jComment.isSelected(),
-//                    setBoolean(6, (Boolean)newComplexProductData[5]);       //ISSCALE,
-                    m_jScale.isSelected(),
-//                    setDouble(7, (Double)newComplexProductData[6]);         //PRICEBUY,
-                    0.0,
-//                    setDouble(8, (Double)newComplexProductData[7]);         //PRICESELL,
-                    m_jPriceSell.getText() != null && !m_jPriceSell.getText().trim().equals("") ? Double.parseDouble(m_jPriceSell.getText()) : 0.0,
-//                    setString(9, (String)newComplexProductData[8]);         //CATEGORY,
-                    ((CategoryInfo)m_jCategory.getModel().getSelectedItem()).getID(),
-//                    setString(10, (String)newComplexProductData[9]);        //TAXCAT
-                    ((TaxCategoryInfo)m_jTax.getModel().getSelectedItem()).getID(),
-//                    setString(11, (String)newComplexProductData[10]);       //ATTRIBUTESET_ID,  // null
-                    null,
-//                    setObject(12,  newComplexProductData[11]);   //IMAGE,            // null
-                    null,
-//                    setDouble(13, (Double)newComplexProductData[12]);       //STOCKCOST,        // null
-                    null,
-//                    setDouble(14, (Double)newComplexProductData[13]);       //STOCKVOLUME,      // null
-                    null,
-//                    setObject(15,  newComplexProductData[14]);   //ATTRIBUTES,       // null
-                    null,
-//                    setBoolean(16, (Boolean)newComplexProductData[15]);     //ISCOMPLEX
-                    jCheckBox_ComplexProduct.isSelected(),
-                    m_jInCatalog.isSelected(),
-                    null
-                };
-
-                writeLog(this, "Object[] newComplexProductData : " + Arrays.asList(newComplexProductData));
+                    Object[] newComplexProductData = new Object[]{
+    //                    setString(1, (String)newComplexProductData[0]);         //ID,
+                        m_id,
+    //                    setString(2, (String)newComplexProductData[1]);         //REFERENCE,
+                        m_jRef.getText(),
+    //                    setString(3, (String)newComplexProductData[2]);         //CODE,
+                        m_jCode.getText(),
+    //                    setString(4, (String)newComplexProductData[3]);         //NAME,
+                        m_jName.getText() == null ? "" : m_jName.getText(),
+    //                    setBoolean(5, (Boolean)newComplexProductData[4]);       //ISCOM,
+                        m_jComment.isSelected(),
+    //                    setBoolean(6, (Boolean)newComplexProductData[5]);       //ISSCALE,
+                        m_jScale.isSelected(),
+    //                    setDouble(7, (Double)newComplexProductData[6]);         //PRICEBUY,
+                        0.0,
+    //                    setDouble(8, (Double)newComplexProductData[7]);         //PRICESELL,
+                        m_jPriceSell.getText() != null && !m_jPriceSell.getText().trim().equals("") ? Double.parseDouble(m_jPriceSell.getText()) : 0.0,
+    //                    setString(9, (String)newComplexProductData[8]);         //CATEGORY,
+                        ((CategoryInfo)m_jCategory.getModel().getSelectedItem()).getID(),
+    //                    setString(10, (String)newComplexProductData[9]);        //TAXCAT
+                        ((TaxCategoryInfo)m_jTax.getModel().getSelectedItem()).getID(),
+    //                    setString(11, (String)newComplexProductData[10]);       //ATTRIBUTESET_ID,  // null
+                        null,
+    //                    setObject(12,  newComplexProductData[11]);   //IMAGE,            // null
+                        null,
+    //                    setDouble(13, (Double)newComplexProductData[12]);       //STOCKCOST,        // null
+                        null,
+    //                    setDouble(14, (Double)newComplexProductData[13]);       //STOCKVOLUME,      // null
+                        null,
+    //                    setObject(15,  newComplexProductData[14]);   //ATTRIBUTES,       // null
+                        null,
+    //                    setBoolean(16, (Boolean)newComplexProductData[15]);     //ISCOMPLEX
+                        jCheckBox_ComplexProduct.isSelected(),
+                        m_jInCatalog.isSelected(),
+                        null
+                    };
                     m_dSales.insertNewComplexProduct(newComplexProductData).exec();
-writeLog(this,"jCheckBox_ComplexProductActionPerformed must be added new product");
-                }else{
-writeLog(this,"jCheckBox_ComplexProductActionPerformed productInfoExt.toString() = " + productInfoExt.toString());
                 }
-
                 // если нет, то установить цену = 0 и занести в базу
             } catch (Exception ex) {
                 writeLog(this, "jCheckBox_ComplexProductActionPerformed ex : " + ex.getMessage());
