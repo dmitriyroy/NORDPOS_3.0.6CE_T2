@@ -76,16 +76,17 @@ public class ProductsWarehousePanel extends JPanelTableExt {
         lpr = new ListProviderCreator(new PreparedSentence(app.getSession(),
                 "SELECT L.ID, P.ID, P.REFERENCE, P.NAME," +
                 "L.STOCKSECURITY, L.STOCKMAXIMUM, COALESCE(S.SUMUNITS, 0), P.ISCOMPLEX " +
-                ", D.COMPLEX_GUANTITY  " +
+                ", ifnull(D.COMPLEX_GUANTITY,0)  " +
                 "FROM PRODUCTS P " +
                 "LEFT OUTER JOIN (SELECT ID, PRODUCT, LOCATION, STOCKSECURITY, STOCKMAXIMUM FROM STOCKLEVEL WHERE LOCATION = ?) L ON P.ID = L.PRODUCT " +
                 "LEFT OUTER JOIN (SELECT PRODUCT, SUM(UNITS) AS SUMUNITS FROM STOCKCURRENT WHERE LOCATION = ? GROUP BY PRODUCT) S ON P.ID = S.PRODUCT " +
                 "LEFT OUTER JOIN (" +  
                 " SELECT t1.ID,   " +
                 "        floor(min(ifnull(t2.UNITS,0) / ifnull(t3.INGREDIENT_WEIGHT,1)))  as \"COMPLEX_GUANTITY\"  " +
-                "   FROM PRODUCTS      as t1                                  " +
-                "  JOIN RECIPES       as t3 on t3.PRODUCT_ID = t1.ID         " +
-                "  JOIN stockcurrent  as t2 on t2.PRODUCT = t3.INGREDIENT_ID " +
+                "   FROM PRODUCTS      as t1                                     " +
+                "   JOIN RECIPES       as t3 on t3.PRODUCT_ID = t1.ID            " +
+                "   JOIN stockcurrent  as t2 on t2.PRODUCT    = t3.INGREDIENT_ID " +
+                "  GROUP BY t1.ID                                                " +
                 " ) as D ON P.ID = D.ID " + 
                 "ORDER BY P.NAME",
                 new SerializerWriteBasicExt(new Datas[] {Datas.STRING, Datas.STRING}, new int[]{1, 1}),

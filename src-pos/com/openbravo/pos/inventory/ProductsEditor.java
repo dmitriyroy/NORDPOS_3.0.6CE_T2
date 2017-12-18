@@ -114,7 +114,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jTable_ComplexData.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {}, new String [] {}
         ));
-        jTable_ComplexData.setEnabled(false);
+//        jTable_ComplexData.setEnabled(false);
         jScrollPane3.setViewportView(jTable_ComplexData);
 
         m_App = app;
@@ -342,9 +342,17 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             m_jCode.setText(null);
         }
 
+
+//        jScrollPane3.setViewportView(jTable_ComplexData);
         calculateMargin();
         calculatePriceSellTax();
-//        setComplexData();
+        try {
+            setComplexData((String)m_id);
+        } catch (BasicException ex) {
+            Logger.getLogger(ProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }    
+        jTable_ComplexData.setEnabled(false);
+        jButton3.setEnabled(false);
     }
 
     @Override
@@ -401,7 +409,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         calculateMargin();
         calculatePriceSellTax();
-//        deleteComplexData();
     }
 
     @Override
