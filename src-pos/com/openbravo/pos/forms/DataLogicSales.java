@@ -45,6 +45,7 @@ import com.openbravo.pos.ticket.TicketTaxInfo;
 import static com.openbravo.pos.util.T2FileLogger.writeLog;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -150,7 +151,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
     
     public Integer updateComplexPriceBy(final String complexProductId){
-//        writeLog(this.getClass().getName(), "updateComplexPriceBy-1 : complexProductId = " + complexProductId);
         int countUpdatedRows = 0;
         try {
             countUpdatedRows = new PreparedSentence(s
@@ -166,11 +166,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 }
             });
         } catch (BasicException ex) {
-//            writeLog(this.getClass().getName(), "updateComplexPriceBy ex = " + ex.getMessage());
             Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-//        writeLog(this.getClass().getName(), "updateComplexPriceBy-2 : countUpdatedRows = " + countUpdatedRows);
         return countUpdatedRows;
     }
     
@@ -227,12 +224,52 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             final String ingredientId, 
             final Double ingredientWeight) throws BasicException{
         
-        try {
-//            writeLog(this.getClass().getName(), "addIngredientIntoRecipe recipeId = " + recipeId);
-            
             int countInsertedRow = 0;
             int countUpdatedRow = 0;
             int countIngredientInRecipe = 0;
+            
+            int countExistProduct = 0;
+        try {
+            writeLog(this.getClass().getName(), "addIngredientIntoRecipe recipeId = " + recipeId);
+            countExistProduct = (Integer) new StaticSentence(s,
+                    "SELECT COUNT(*) FROM PRODUCTS WHERE ID = ?",
+                    SerializerWriteParams.INSTANCE,
+                    SerializerReadInteger.INSTANCE).find( new DataParams() {
+                            @Override
+                            public void writeValues() throws BasicException {
+                                setString(1, recipeId);
+                            }
+                        });
+            writeLog(this.getClass().getName(), "addIngredientIntoRecipe countExistProduct 0 = " + countExistProduct);
+            if(countExistProduct == 0){
+//                getProductCatInsert();
+                writeLog(this.getClass().getName(), "addIngredientIntoRecipe can insert new produst = ");
+                for(int i =0; i < productsRow.getDatas().length; i++){
+                    writeLog(this.getClass().getName(), "addIngredientIntoRecipe i = " + i + "; " + productsRow.getDatas()[i]);
+                }
+                try{
+                new SentenceExecTransaction(s) {
+                    @Override
+                    public int execInTransaction(Object params) throws BasicException {
+                        Object[] values = (Object[]) params;
+                        writeLog(this.getClass().getName(), "addIngredientIntoRecipe Object[] values = " + Arrays.asList(values));
+                        int i = new PreparedSentence(s
+                            , "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, ATTRIBUTESET_ID, IMAGE, STOCKCOST, STOCKVOLUME, ATTRIBUTES, ISCOMPLEX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                            , new SerializerWriteBasicExt(productsRow.getDatas(), new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17})).exec(params);
+                        if (i > 0 && ((Boolean)values[14])) {
+                            return new PreparedSentence(s
+                                , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
+                                , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0, 15})).exec(params);
+                        } else {
+                            return i;
+                        }
+                    }
+                };
+                }catch(Exception e){
+                    writeLog(this.getClass().getName(), "addIngredientIntoRecipe e" + e.getMessage());
+                }
+            }
+            writeLog(this.getClass().getName(), "addIngredientIntoRecipe countExistProduct 1 = " + countExistProduct);
             // проверить есть ли ингредиент в рецепте
             countIngredientInRecipe = (Integer) new StaticSentence(s,
                     "SELECT COUNT(*) FROM RECIPES WHERE PRODUCT_ID = ? AND INGREDIENT_ID = ?",
@@ -244,7 +281,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                                 setString(2, ingredientId);
                             }
                         });
-//            writeLog(this.getClass().getName(), "addIngredientIntoRecipe countIngredientInRecipe = " + countIngredientInRecipe);   
+            writeLog(this.getClass().getName(), "addIngredientIntoRecipe countIngredientInRecipe = " + countIngredientInRecipe);   
 
             // если ингредиента нет, то добавить его
             if(countIngredientInRecipe == 0){
@@ -278,10 +315,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             }
             return countInsertedRow;        
         } catch (Exception ex) {
-//            writeLog(this.getClass().getName(), "addIngredientIntoRecipe ex = " + ex.getMessage()); 
+            writeLog(this.getClass().getName(), "addIngredientIntoRecipe ex = " + ex.getMessage()); 
             Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return -7;
+        return countInsertedRow;
     }
 
     public Integer deleteIngredientFromRecipe(final String productId, final String ingredientId) throws BasicException {
