@@ -133,18 +133,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     // team2 - start
     public final Double getComplexPriceBy(String complexProductId) throws BasicException {
         return (Double) new StaticSentence(s,
-                "SELECT sum(ifnull(t3.PRICEBUY,0) * ifnull(t2.INGREDIENT_WEIGHT,0)) / t4.CNT as \"PRICEBUY\"  " +
+                "SELECT sum(ifnull(t3.PRICEBUY,0) * ifnull(t2.INGREDIENT_WEIGHT,0)) as \"PRICEBUY\"           " +
                 "  FROM PRODUCTS as t1                                                                        " +
                 "  JOIN RECIPES  as t2 on t2.PRODUCT_ID = t1.ID                                               " +
                 "  JOIN PRODUCTS as t3 on t3.ID         = t2.INGREDIENT_ID                                    " +
-                "  JOIN (                                                                                     " +
-                "        SELECT a1.ID,                                                                        " +
-                "		count(*) as \"CNT\"                                                           " +
-                "          FROM PRODUCTS as a1                                                                " +
-                "          JOIN RECIPES  as a2 on a2.PRODUCT_ID = a1.ID                                       " +
-                "          JOIN PRODUCTS as a3 on a3.ID         = a2.INGREDIENT_ID                            " +
-                "         GROUP BY a1.ID                                                                      " +
-                "       ) as t4 on t4.ID = t1.ID                                                              " +
                 " WHERE t1.ID = ?                                                                             ",
                 SerializerWriteString.INSTANCE,
                 SerializerReadDouble.INSTANCE).find(complexProductId);
