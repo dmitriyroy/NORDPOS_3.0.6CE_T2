@@ -14,12 +14,12 @@ public class ProductMini {
     
     private String id;
     private String ingredientName;
-    private boolean isComplex;
+    private Boolean isComlex;
 
-    public ProductMini(String id, String ingredientName, boolean isComplex) {
+    public ProductMini(String id, String ingredientName, Boolean isComlex) {
         this.id = id;
         this.ingredientName = ingredientName;
-        this.isComplex = isComplex;
+        this.isComlex = isComlex;
     }
 
     public String getId() {
@@ -38,13 +38,14 @@ public class ProductMini {
         this.ingredientName = ingredientName;
     }
 
-    public boolean isIsComplex() {
-        return isComplex;
+    public Boolean getIsComlex() {
+        return isComlex;
     }
 
-    public void setIsComplex(boolean isComplex) {
-        this.isComplex = isComplex;
+    public void setIsComlex(Boolean isComlex) {
+        this.isComlex = isComlex;
     }
+
     
     public static SerializerRead getSerializerRead() {
         return new SerializerRead() {
@@ -60,7 +61,7 @@ public class ProductMini {
 
     @Override
     public String toString() {
-        return "ProductMini{" + "id=" + id + ", ingredientName=" + ingredientName + ", isComplex=" + isComplex + '}';
+        return "ProductMini{" + "id=" + id + ", ingredientName=" + ingredientName + ", isComlex=" + isComlex + '}';
     }
     
 }

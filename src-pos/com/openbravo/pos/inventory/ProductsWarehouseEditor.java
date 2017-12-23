@@ -81,7 +81,13 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         prodname = myprod[3];
         location = myprod[4];
         m_jTitle.setText(Formats.STRING.formatValue(myprod[2]) + " - " + Formats.STRING.formatValue(myprod[3]));
-        m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));
+        // if Complex Product
+        // then quantity their ingredients
+        if(myprod[8] != null && (boolean)myprod[8]){
+            m_jQuantity.setText(Formats.INT.formatValue(myprod[9]));
+        }else{
+            m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));             
+        }
         m_jMinimum.setText(Formats.DOUBLE.formatValue(myprod[5]));
         m_jMaximum.setText(Formats.DOUBLE.formatValue(myprod[6]));
         m_jMinimum.setEnabled(true);
@@ -95,7 +101,13 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         prodname = myprod[3];
         location = myprod[4];
         m_jTitle.setText(Formats.STRING.formatValue(myprod[2]) + " - " + Formats.STRING.formatValue(myprod[3]));
-        m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));
+        // if Complex Product
+        // then quantity their ingredients
+        if(myprod[8] != null && (boolean)myprod[8]){
+            m_jQuantity.setText(Formats.INT.formatValue(myprod[9]));
+        }else{
+            m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));             
+        }
         m_jMinimum.setText(Formats.DOUBLE.formatValue(myprod[5]));
         m_jMaximum.setText(Formats.DOUBLE.formatValue(myprod[6]));
         m_jMinimum.setEnabled(false);

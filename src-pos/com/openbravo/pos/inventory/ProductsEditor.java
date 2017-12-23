@@ -38,6 +38,8 @@ import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.ticket.CategoryInfo;
 import com.openbravo.pos.ticket.IngredientInfo;
 import com.openbravo.pos.ticket.ProductInfoEdit;
+import com.openbravo.pos.ticket.ProductInfoExt;
+import static com.openbravo.pos.util.T2FileLogger.writeLog;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -107,14 +109,14 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     public ProductsEditor(AppView app, DataLogicSales dlSales, DirtyManager dirty) {
         initComponents();
-        
+
         jTable_ComplexData = new MJTable();
         jTable_ComplexData.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {}, new String [] {}
         ));
-        jTable_ComplexData.setEnabled(false);
+//        jTable_ComplexData.setEnabled(false);
         jScrollPane3.setViewportView(jTable_ComplexData);
-        
+
         m_App = app;
         m_dSales = dlSales;
 
@@ -323,6 +325,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCatalogOrder.setEnabled(false);
         txtAttributes.setEnabled(true);
         jCheckBox_ComplexProduct.setEnabled(true);
+        m_jPriceBuy.setEditable(true);
 
         if (s_GenBarcode.equals("true")) {
             try {
@@ -339,9 +342,17 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             m_jCode.setText(null);
         }
 
+
+//        jScrollPane3.setViewportView(jTable_ComplexData);
         calculateMargin();
         calculatePriceSellTax();
-//        setComplexData();
+        try {
+            setComplexData((String)m_id);
+        } catch (BasicException ex) {
+            Logger.getLogger(ProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }    
+        jTable_ComplexData.setEnabled(false);
+        jButton3.setEnabled(false);
     }
 
     @Override
@@ -356,7 +367,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jName.setText(Formats.STRING.formatValue(myprod[3]));
         m_jComment.setSelected(((Boolean) myprod[4]));
         m_jScale.setSelected(((Boolean) myprod[5]));
-        m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
+        if((Boolean) myprod[17]){
+            m_jPriceBuy.setText(Formats.CURRENCY.formatValue(m_dSales.getProductPriceBy((String)m_id)));
+        }else{
+            m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
+        }
         setPriceSell(myprod[7]);
         m_CategoryModel.setSelectedKey(myprod[8]);
         taxcatmodel.setSelectedKey(myprod[9]);
@@ -394,7 +409,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         calculateMargin();
         calculatePriceSellTax();
-//        deleteComplexData();
     }
 
     @Override
@@ -409,8 +423,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jName.setText(Formats.STRING.formatValue(myprod[3]));
         m_jComment.setSelected(((Boolean) myprod[4]));
         m_jScale.setSelected(((Boolean) myprod[5]));
-//        m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
-        m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
+        if((Boolean) myprod[17]){
+            m_jPriceBuy.setText(Formats.CURRENCY.formatValue(m_dSales.getProductPriceBy((String)m_id)));
+         }else{
+            m_jPriceBuy.setText(Formats.CURRENCY.formatValue(myprod[6]));
+        }
         setPriceSell(myprod[7]);
         m_CategoryModel.setSelectedKey(myprod[8]);
         taxcatmodel.setSelectedKey(myprod[9]);
@@ -484,11 +501,13 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         return myprod;
     }
-    
+
     public void setComplexData(String id) throws BasicException{
         List<IngredientInfo> ingredients = m_dSales.getIngredients(id);
         jTable_ComplexData.setModel(new DefaultTableModel(new String [] {
-                    "ID","Продукт", "Коэфициент"
+                    "ID",
+                    AppLocal.getIntString("column.product"),
+                    AppLocal.getIntString("column.coefficient")
                 }, ingredients.size()));
         jTable_ComplexData.getColumnModel().getColumn(0).setResizable(false);
         jTable_ComplexData.getColumnModel().getColumn(0).setPreferredWidth(0);
@@ -514,7 +533,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         {
           return false;
         }
-    }  
+    }
     public String calculateComplexPriceBy(String id) throws BasicException{
         if(jCheckBox_ComplexProduct.isSelected()){
             m_jPriceBuy.setEditable(false);
@@ -533,7 +552,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jTable_ComplexData.setEnabled(false);
         return m_jPriceBuy.getText();
     }
-    
+
     @Override
     public Component getComponent() {
         return this;
@@ -1037,24 +1056,9 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jLabel_ComplexProduct.setBounds(10, 170, 150, 20);
 
         jTable_ComplexData.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                //                {"Кофе", "0,25"},
-                //                {"Сахар", "0,02"},
-                //                {"Молоко", "0,03"},
-                //                {"Молоко1", "0,03"},
-                //                {"Молоко2", "0,03"},
-                //                {"Молоко3", "0,03"},
-                //                {"Молоко4", "0,03"},
-                //                {"Молоко5", "0,03"},
-                //                {"Молоко6", "0,03"},
-                //                {"Молоко7", "0,03"},
-                //        {"Молоко8", "0,03"}
-            }
-            //    null
+            new Object [][] { }
             ,
-            new String [] {
-                //        "Продукт", "Коэфициент"
-            }
+            new String [] {}
         ));
         jTable_ComplexData.setEnabled(false);
         jScrollPane3.setViewportView(jTable_ComplexData);
@@ -1062,7 +1066,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jPanel2.add(jScrollPane3);
         jScrollPane3.setBounds(250, 10, 280, 160);
 
-        jButton3.setText("Изменить рецепт");
+        jButton3.setText(AppLocal.getIntString("button.editRecipe"));
         jButton3.setEnabled(false);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1070,7 +1074,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             }
         });
         jPanel2.add(jButton3);
-        jButton3.setBounds(390, 180, 140, 23);
+        jButton3.setBounds(320, 180, 210, 23);
 
         jTabbedPane1.addTab(AppLocal.getIntString("label.prodstock"), jPanel2); // NOI18N
 
@@ -1220,14 +1224,65 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     }//GEN-LAST:event_m_jPrintLabelActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        //new ComplexProductEditor().setVisible(true);
-        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales, m_id);
+        ComplexProductsEditor complexProductsEditor = new ComplexProductsEditor(m_dSales, m_id, jTable_ComplexData, m_jPriceBuy);
         complexProductsEditor.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jCheckBox_ComplexProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_ComplexProductActionPerformed
-        // TODO add your handling code here:
         if (jCheckBox_ComplexProduct.isSelected()) {
+            // TODO new ComplexProdust
+            // проверить, есть ли такой продукт в базе
+            if(m_id == null){
+                m_id = UUID.randomUUID().toString();
+            }
+            try {
+                ProductInfoExt productInfoExt = m_dSales.getProductInfo((String) m_id);
+                if(productInfoExt == null){
+                    Object[] newComplexProductData = new Object[]{
+    //                    setString(1, (String)newComplexProductData[0]);         //ID,
+                        m_id,
+    //                    setString(2, (String)newComplexProductData[1]);         //REFERENCE,
+                        m_jRef.getText(),
+    //                    setString(3, (String)newComplexProductData[2]);         //CODE,
+                        m_jCode.getText(),
+    //                    setString(4, (String)newComplexProductData[3]);         //NAME,
+                        m_jName.getText() == null ? "" : m_jName.getText(),
+    //                    setBoolean(5, (Boolean)newComplexProductData[4]);       //ISCOM,
+                        m_jComment.isSelected(),
+    //                    setBoolean(6, (Boolean)newComplexProductData[5]);       //ISSCALE,
+                        m_jScale.isSelected(),
+    //                    setDouble(7, (Double)newComplexProductData[6]);         //PRICEBUY,
+                        0.0,
+    //                    setDouble(8, (Double)newComplexProductData[7]);         //PRICESELL,
+                        m_jPriceSell.getText() != null && !m_jPriceSell.getText().trim().equals("") ? Double.parseDouble(m_jPriceSell.getText()) : 0.0,
+    //                    setString(9, (String)newComplexProductData[8]);         //CATEGORY,
+                        ((CategoryInfo)m_jCategory.getModel().getSelectedItem()).getID(),
+    //                    setString(10, (String)newComplexProductData[9]);        //TAXCAT
+                        ((TaxCategoryInfo)m_jTax.getModel().getSelectedItem()).getID(),
+    //                    setString(11, (String)newComplexProductData[10]);       //ATTRIBUTESET_ID,  // null
+                        null,
+    //                    setObject(12,  newComplexProductData[11]);   //IMAGE,            // null
+                        null,
+    //                    setDouble(13, (Double)newComplexProductData[12]);       //STOCKCOST,        // null
+                        null,
+    //                    setDouble(14, (Double)newComplexProductData[13]);       //STOCKVOLUME,      // null
+                        null,
+    //                    setObject(15,  newComplexProductData[14]);   //ATTRIBUTES,       // null
+                        null,
+    //                    setBoolean(16, (Boolean)newComplexProductData[15]);     //ISCOMPLEX
+                        jCheckBox_ComplexProduct.isSelected(),
+                        m_jInCatalog.isSelected(),
+                        null
+                    };
+                    m_dSales.insertNewComplexProduct(newComplexProductData).exec();
+                }
+                // если нет, то установить цену = 0 и занести в базу
+            } catch (Exception ex) {
+                writeLog(this, "jCheckBox_ComplexProductActionPerformed ex : " + ex.getMessage());
+                Logger.getLogger(ProductsEditor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            // если есть, то продолжать работать в штатном режиме
             jButton3.setEnabled(true);
             jTable_ComplexData.setEnabled(true);
             m_jPriceBuy.setEditable(false);

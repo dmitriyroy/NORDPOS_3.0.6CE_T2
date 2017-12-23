@@ -164,4 +164,5 @@ public class InventoryLine {
     public String printSubValue() {
         return Formats.CURRENCY.formatValue(getSubValue());
     }
+
 }

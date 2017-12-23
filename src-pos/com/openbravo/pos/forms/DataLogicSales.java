@@ -42,13 +42,15 @@ import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
+import static com.openbravo.pos.util.T2FileLogger.writeLog;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -128,17 +130,39 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , ProductInfoExt.getSerializerRead()).find(sReference);
     }
 
-    // team2
-    public final Double getComplexPriceBy(String id) throws BasicException {
+    // team2 - start
+    public final Double getComplexPriceBy(String complexProductId) throws BasicException {
         return (Double) new StaticSentence(s,
-                "SELECT sum(ifnull(t3.PRICEBUY,0) * ifnull(t2.INGREDIENT_WEIGHT,0)) as \"PRICEBUY\" " +
-                "  FROM PRODUCTS as t1                                                              " +
-                "  join RECIPES  as t2 on t2.PRODUCT_ID = t1.ID                                     " +
-                "  join PRODUCTS as t3 on t3.ID         = t2.INGREDIENT_ID                          " +
-                " WHERE t1.ID = ?                                                                   ",
+                "SELECT sum(ifnull(t3.PRICEBUY,0) * ifnull(t2.INGREDIENT_WEIGHT,0)) as \"PRICEBUY\"           " +
+                "  FROM PRODUCTS as t1                                                                        " +
+                "  JOIN RECIPES  as t2 on t2.PRODUCT_ID = t1.ID                                               " +
+                "  JOIN PRODUCTS as t3 on t3.ID         = t2.INGREDIENT_ID                                    " +
+                " WHERE t1.ID = ?                                                                             ",
                 SerializerWriteString.INSTANCE,
-                SerializerReadDouble.INSTANCE).find(id);
+                SerializerReadDouble.INSTANCE).find(complexProductId);
     }
+
+    public Integer updateComplexPriceBy(final String complexProductId){
+        int countUpdatedRows = 0;
+        try {
+            countUpdatedRows = new PreparedSentence(s
+                    , "UPDATE PRODUCTS        " +
+                      "   SET PRICEBUY = ?    " +
+                      " WHERE ID = ?          "
+                    , SerializerWriteParams.INSTANCE
+            ).exec(new DataParams() {
+                @Override
+                public void writeValues() throws BasicException {
+                    setDouble(1, getComplexPriceBy(complexProductId));
+                    setString(2, complexProductId);
+                }
+            });
+        } catch (BasicException ex) {
+            Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return countUpdatedRows;
+    }
+
     public final List<IngredientInfo> getIngredients(String id) throws BasicException{
         return new PreparedSentence(s
             ,"SELECT t1.ID,                                     " +
@@ -152,27 +176,192 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , SerializerWriteString.INSTANCE
             , IngredientInfo.getSerializerRead()).list(id);
     }
-    
+
     public final List<ProductMini> getAllProductName() throws BasicException{
         return new PreparedSentence(s
-            , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS"
-            , SerializerWriteString.INSTANCE
+            , "SELECT ID,                                   "
+            + "       NAME,                                 "
+            + "       ISCOMPLEX                             "
+            + "  FROM PRODUCTS                              "
+            + "  ORDER BY NAME ASC                          "
+            , null
             , ProductMini.getSerializerRead()).list();
     }
-    
+
     public final List<ProductMini> getAllProductNameComplex() throws BasicException{
         return new PreparedSentence(s
-            , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = true "
-            , SerializerWriteString.INSTANCE
+            , "SELECT ID,                                   "
+            + "       NAME,                                 "
+            + "       ISCOMPLEX                             "
+            + "  FROM PRODUCTS                              "
+            + " WHERE ISCOMPLEX = true                      "
+            + " ORDER BY NAME ASC                           "
+            , null
             , ProductMini.getSerializerRead()).list();
     }
-    
+
     public final List<ProductMini> getAllProductNameNonComplex() throws BasicException{
         return new PreparedSentence(s
-            , "SELECT ID, NAME, ISCOMPLEX FROM PRODUCTS WHERE ISCOMPLEX = false "
-            , SerializerWriteString.INSTANCE
+            , "SELECT ID,                                   "
+            + "       NAME,                                 "
+            + "       ISCOMPLEX                             "
+            + "  FROM PRODUCTS                              "
+            + " WHERE ISCOMPLEX = false                     "
+            + " ORDER BY NAME ASC                          "
+            , null
             , ProductMini.getSerializerRead()).list();
     }
+
+    public Integer addIngredientIntoRecipe(final String recipeId,final String ingredientId,final Double ingredientWeight) throws BasicException{
+            int countInsertedRow = 0;
+            int countUpdatedRow = 0;
+            int countIngredientInRecipe = 0;
+        try {
+            // проверить есть ли ингредиент в рецепте
+            countIngredientInRecipe = (Integer) new StaticSentence(s,
+                    "SELECT COUNT(*) FROM RECIPES WHERE PRODUCT_ID = ? AND INGREDIENT_ID = ?",
+                    SerializerWriteParams.INSTANCE,
+                    SerializerReadInteger.INSTANCE).find( new DataParams() {
+                            @Override
+                            public void writeValues() throws BasicException {
+                                setString(1, recipeId);
+                                setString(2, ingredientId);
+                            }
+                        });
+
+            // если ингредиента нет, то добавить его
+            if(countIngredientInRecipe == 0){
+                countInsertedRow = new PreparedSentence(s
+                        , "INSERT INTO RECIPES (ID, PRODUCT_ID, INGREDIENT_ID, INGREDIENT_WEIGHT) VALUES (?, ?, ?, ?)"
+                        , SerializerWriteParams.INSTANCE
+                ).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setTimestamp(1, new Date());
+                        setString(2, recipeId);
+                        setString(3, ingredientId);
+                        setDouble(4, ingredientWeight);
+                    }
+                });
+            }else{
+                countUpdatedRow = new PreparedSentence(s
+                        , "UPDATE RECIPES               "
+                        + "   SET INGREDIENT_WEIGHT = ? "
+                        + " WHERE PRODUCT_ID        = ? "
+                        + "   AND INGREDIENT_ID     = ? "
+                        , SerializerWriteParams.INSTANCE
+                ).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setDouble(1, ingredientWeight);
+                        setString(2, recipeId);
+                        setString(3, ingredientId);
+                    }
+                });
+            }
+            return countInsertedRow;
+        } catch (BasicException ex) {
+            writeLog(this.getClass().getName(), "addIngredientIntoRecipe ex = " + ex.getMessage());
+            Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return countInsertedRow;
+    }
+
+    public Integer deleteIngredientFromRecipe(final String productId, final String ingredientId) throws BasicException {
+        int countDeletedRow = 0;
+        countDeletedRow = new PreparedSentence(s
+                , "DELETE FROM RECIPES WHERE PRODUCT_ID = ? AND INGREDIENT_ID = ?"
+                , SerializerWriteParams.INSTANCE
+                ).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setString(1, productId);
+                        setString(2, ingredientId);
+                    }
+                });
+        return countDeletedRow;
+    }
+
+    public Integer updateIngredientInRecipe(final String productId, final String ingredientId, final Double ingredientWeight) throws BasicException{
+        int countUpdatedRows = 0;
+        countUpdatedRows = new PreparedSentence(s
+                        , "UPDATE RECIPES               "
+                        + "   SET INGREDIENT_WEIGHT = ? "
+                        + " WHERE PRODUCT_ID        = ? "
+                        + "   AND INGREDIENT_ID     = ? "
+                        , SerializerWriteParams.INSTANCE
+                ).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setDouble(1, ingredientWeight);
+                        setString(2, productId);
+                        setString(3, ingredientId);
+                    }
+                });
+        int updatedRowsComplexPriceBy = updateComplexPriceBy(productId);
+        return countUpdatedRows;
+    }
+
+    public Double getProductPriceBy(String productId) {
+        Double priceBy = 0.0;
+        try {
+            priceBy = (Double) new StaticSentence(s,
+                    "SELECT PRICEBUY      " +
+                    "  FROM PRODUCTS      " +
+                    " WHERE ID = ?        ",
+                    SerializerWriteString.INSTANCE,
+                    SerializerReadDouble.INSTANCE).find(productId);
+        } catch (BasicException ex) {
+            Logger.getLogger(DataLogicSales.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return priceBy;
+    }
+
+    public final SentenceExec insertNewComplexProduct(final Object[] newComplexProductData) {
+        return new SentenceExecTransaction(s) {
+            @Override
+            public int execInTransaction(Object params) throws BasicException {
+                    int i = new PreparedSentence(s
+                        , "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, ATTRIBUTESET_ID, IMAGE, STOCKCOST, STOCKVOLUME, ATTRIBUTES, ISCOMPLEX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                        , SerializerWriteParams.INSTANCE).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setString(1, (String)newComplexProductData[0]);         //ID,
+                        setString(2, (String)newComplexProductData[1]);         //REFERENCE,
+                        setString(3, (String)newComplexProductData[2]);         //CODE,
+                        setString(4, (String)newComplexProductData[3]);         //NAME,
+                        setBoolean(5, (Boolean)newComplexProductData[4]);       //ISCOM,
+                        setBoolean(6, (Boolean)newComplexProductData[5]);       //ISSCALE,
+                        setDouble(7, (Double)newComplexProductData[6]);         //PRICEBUY,
+                        setDouble(8, (Double)newComplexProductData[7]);         //PRICESELL,
+                        setString(9, (String)newComplexProductData[8]);         //CATEGORY,
+                        setString(10, (String)newComplexProductData[9]);        //TAXCAT
+                        setString(11, (String)newComplexProductData[10]);       //ATTRIBUTESET_ID,  // null
+                        setObject(12,  newComplexProductData[11]);              //IMAGE,            // null
+                        setDouble(13, (Double)newComplexProductData[12]);       //STOCKCOST,        // null
+                        setDouble(14, (Double)newComplexProductData[13]);       //STOCKVOLUME,      // null
+                        setObject(15,  newComplexProductData[14]);              //ATTRIBUTES,       // null
+                        setBoolean(16, (Boolean)newComplexProductData[15]);     //ISCOMPLEX
+                    }
+                });
+                    
+                    if (i > 0 && ((Boolean)newComplexProductData[16])) {
+                        return new PreparedSentence(s
+                            , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
+                            , SerializerWriteParams.INSTANCE).exec(new DataParams() {
+                    @Override
+                    public void writeValues() throws BasicException {
+                        setString(1, (String)newComplexProductData[0]);         //ID,
+                        setInt(2, (Integer)newComplexProductData[17]);         //REFERENCE,
+                    }
+                });
+                    } else {
+                        return i;
+                    }
+            }
+        };
+    }
+    // team2 - end
 
     // Catalogo de productos
     public final List<CategoryInfo> getRootCategories() throws BasicException {
@@ -267,7 +456,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new StaticSentence(s
             , "SELECT ID, NAME FROM PEOPLE ORDER BY NAME"
             , null
-            , new SerializerRead() { 
+            , new SerializerRead() {
                 @Override
                 public Object readValues(DataRead dr) throws BasicException {
                     return new TaxCategoryInfo(
@@ -281,7 +470,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new StaticSentence(s
             , "SELECT ID, NAME, CATEGORY, VALIDFROM, CUSTCATEGORY, PARENTID, RATE, RATECASCADE, RATEORDER FROM TAXES ORDER BY NAME"
             , null
-            , new SerializerRead() { 
+            , new SerializerRead() {
                 @Override
                 public Object readValues(DataRead dr) throws BasicException {
                     return new TaxInfo(
@@ -313,7 +502,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new StaticSentence(s
             , "SELECT ID, NAME FROM TAXCUSTCATEGORIES ORDER BY NAME"
             , null
-            , new SerializerRead() { 
+            , new SerializerRead() {
                 @Override
                 public Object readValues(DataRead dr) throws BasicException {
                     return new TaxCustCategoryInfo(dr.getString(1), dr.getString(2));
@@ -323,7 +512,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new StaticSentence(s
             , "SELECT ID, NAME FROM TAXCATEGORIES ORDER BY NAME"
             , null
-            , new SerializerRead() { 
+            , new SerializerRead() {
                 @Override
                 public Object readValues(DataRead dr) throws BasicException {
                     return new TaxCategoryInfo(dr.getString(1), dr.getString(2));
@@ -333,7 +522,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new StaticSentence(s
             , "SELECT ID, NAME FROM ATTRIBUTESET ORDER BY NAME"
             , null
-            , new SerializerRead() { 
+            , new SerializerRead() {
                 @Override
                 public Object readValues(DataRead dr) throws BasicException {
                     return new AttributeSetInfo(dr.getString(1), dr.getString(2));
@@ -387,7 +576,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 , "SELECT T.ID, T.TICKETTYPE, T.TICKETID, R.DATENEW, R.MONEY, R.ATTRIBUTES, P.ID, P.NAME, T.CUSTOMER FROM RECEIPTS R JOIN TICKETS T ON R.ID = T.ID LEFT OUTER JOIN PEOPLE P ON T.PERSON = P.ID WHERE T.TICKETTYPE = ? AND T.TICKETID = ?"
                 , SerializerWriteParams.INSTANCE
                 , new SerializerReadClass(TicketInfo.class))
-                .find(new DataParams() { 
+                .find(new DataParams() {
                     @Override
                     public void writeValues() throws BasicException {
                         setInt(1, tickettype);
@@ -440,7 +629,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 new PreparedSentence(s
                     , "INSERT INTO RECEIPTS (ID, MONEY, DATENEW, ATTRIBUTES) VALUES (?, ?, ?, ?)"
                     , SerializerWriteParams.INSTANCE
-                    ).exec(new DataParams() { 
+                    ).exec(new DataParams() {
                         @Override
                         public void writeValues() throws BasicException {
                             setString(1, ticket.getId());
@@ -459,7 +648,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 new PreparedSentence(s
                     , "INSERT INTO TICKETS (ID, TICKETTYPE, TICKETID, PERSON, CUSTOMER) VALUES (?, ?, ?, ?, ?)"
                     , SerializerWriteParams.INSTANCE
-                    ).exec(new DataParams() { 
+                    ).exec(new DataParams() {
                         @Override
                         public void writeValues() throws BasicException {
                             setString(1, ticket.getId());
@@ -493,7 +682,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, TRANSID, RETURNMSG) VALUES (?, ?, ?, ?, ?, ?)"
                     , SerializerWriteParams.INSTANCE);
                 for (final PaymentInfo p : ticket.getPayments()) {
-                    paymentinsert.exec(new DataParams() { 
+                    paymentinsert.exec(new DataParams() {
                         @Override
                         public void writeValues() throws BasicException {
                             setString(1, UUID.randomUUID().toString());
@@ -511,7 +700,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         ticket.getCustomer().updateCurDebt(p.getTotal(), ticket.getDate());
 
                         // save customer fields...
-                        getDebtUpdate().exec(new DataParams() { 
+                        getDebtUpdate().exec(new DataParams() {
                             @Override
                             public void writeValues() throws BasicException {
                                 setDouble(1, ticket.getCustomer().getCurdebt());
@@ -526,7 +715,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         , SerializerWriteParams.INSTANCE);
                 if (ticket.getTaxes() != null) {
                     for (final TicketTaxInfo tickettax: ticket.getTaxes()) {
-                        taxlinesinsert.exec(new DataParams() { 
+                        taxlinesinsert.exec(new DataParams() {
                             @Override
                             public void writeValues() throws BasicException {
                                 setString(1, UUID.randomUUID().toString());
@@ -563,8 +752,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                                 : MovementReason.OUT_SALE.getKey(),
                             location,
                             ticket.getLine(i).getProductID(),
-                            ticket.getLine(i).getProductAttSetInstId(), 
-                            ticket.getLine(i).getMultiply(), 
+                            ticket.getLine(i).getProductAttSetInstId(),
+                            ticket.getLine(i).getMultiply(),
                             ticket.getLine(i).getPrice()});
                     }
                 }
@@ -572,13 +761,13 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 // update customer debts
                 for (PaymentInfo p : ticket.getPayments()) {
                     if ("debt".equals(p.getName()) || "debtpaid".equals(p.getName())) {
-                        
+
                         ticket.setCustomer(loadCustomerExt(ticket.getCustomer().getId()));
                         // udate customer fields...
                         ticket.getCustomer().updateCurDebt(-p.getTotal(), ticket.getDate());
 
                          // save customer fields...
-                        getDebtUpdate().exec(new DataParams() { 
+                        getDebtUpdate().exec(new DataParams() {
                             @Override
                             public void writeValues() throws BasicException {
                                 setDouble(1, ticket.getCustomer().getCurdebt());
@@ -650,14 +839,42 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             @Override
             public int execInTransaction(Object params) throws BasicException {
                 Object[] values = (Object[]) params;
-                int i = new PreparedSentence(s
-                    , "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, ATTRIBUTESET_ID, IMAGE, STOCKCOST, STOCKVOLUME, ATTRIBUTES, ISCOMPLEX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17})).exec(params);
-                if (i > 0 && ((Boolean)values[14])) {
-                    return new PreparedSentence(s
-                        , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
-                        , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0, 15})).exec(params);
+                // если такой продукт уже есть, то делать UPDATE
+                // эта ситуация возможна при заведении комплексного продукта
+                int countPronuct = (Integer) new StaticSentence(s,
+                        "SELECT COUNT(*) FROM PRODUCTS WHERE ID = ?",
+                        SerializerWriteString.INSTANCE,
+                        SerializerReadInteger.INSTANCE).find((String)values[0]);
+                if(countPronuct == 0){
+                    int i = new PreparedSentence(s
+                        , "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, ATTRIBUTESET_ID, IMAGE, STOCKCOST, STOCKVOLUME, ATTRIBUTES, ISCOMPLEX) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                        , new SerializerWriteBasicExt(productsRow.getDatas(), new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17})).exec(params);
+                    if (i > 0 && ((Boolean)values[14])) {
+                        return new PreparedSentence(s
+                            , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
+                            , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0, 15})).exec(params);
                 } else {
+                    return i;
+                }
+                }else{
+                    int i = new PreparedSentence(s
+                    , "UPDATE PRODUCTS SET ID = ?, REFERENCE = ?, CODE = ?, NAME = ?, ISCOM = ?, ISSCALE = ?, PRICEBUY = ?, PRICESELL = ?, CATEGORY = ?, TAXCAT = ?, ATTRIBUTESET_ID = ?, IMAGE = ?, STOCKCOST = ?, STOCKVOLUME = ?, ATTRIBUTES = ?, ISCOMPLEX = ? WHERE ID = ?"
+                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 0})).exec(params);
+                    if (i > 0) {
+                        if (((Boolean)values[14])) {
+                            if (new PreparedSentence(s
+                                    , "UPDATE PRODUCTS_CAT SET CATORDER = ? WHERE PRODUCT = ?"
+                                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {15, 0})).exec(params) == 0) {
+                                new PreparedSentence(s
+                                    , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
+                                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0, 15})).exec(params);
+                            }
+                        } else {
+                            new PreparedSentence(s
+                                , "DELETE FROM PRODUCTS_CAT WHERE PRODUCT = ?"
+                                , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0})).exec(params);
+                        }
+                    }
                     return i;
                 }
             }
@@ -730,6 +947,66 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS) VALUES (?, ?, ?, ?)"
                         , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {3, 4, 5, 6})).exec(params);
                 }
+
+                // team2 - start
+                // получить ID всех ингредиентов
+                List<String> ingredientesId = new PreparedSentence(s
+                    ,"SELECT distinct                            " +
+                     "	     PRODUCT_ID                       " +
+                     "  FROM RECIPES                             " +
+                     " WHERE INGREDIENT_ID =  ?                     "
+                    , SerializerWriteString.INSTANCE
+//                    , SerializerReadString.INSTANCE).list((String)((Object[]) params)[4]);
+                    , SerializerReadString.INSTANCE).list((String)((Object[]) params)[4]);
+
+                // проверить, есть ли по ним запись в STOCKCURRENT
+                if(!ingredientesId.isEmpty()){
+                    int countLine = 0;
+                    for (String productId : ingredientesId) {
+                        countLine = (Integer) new StaticSentence(s,
+                        "SELECT COUNT(*) FROM STOCKCURRENT WHERE PRODUCT = ?",
+                        SerializerWriteString.INSTANCE,
+                        SerializerReadInteger.INSTANCE).find(productId);
+
+                        // если записи нет, то вставить с нолем в продажах
+                        if(countLine == 0){
+                            new PreparedSentence(s
+                                , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS) VALUES (?, \"" + productId + "\", ?, 0)"
+                                , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {3,  5})).exec(params);
+                        }
+
+                        countLine = 0;
+                    }
+
+                }
+                // после этого сделать UPDATE по комплексному продукту
+                updateresult += ((Object[]) params)[5] == null // if ATTRIBUTESETINSTANCE_ID is null
+                        ? new PreparedSentence(s
+                            ,   "UPDATE STOCKCURRENT as t1                                 " +
+                                "  JOIN PRODUCTS     as t2 on t2.ID = t1.PRODUCT           " +
+                                "  JOIN RECIPES      as t3 on t3.PRODUCT_ID = t2.ID        " +
+                                "  JOIN PRODUCTS     as t4 on t4.ID = t3.INGREDIENT_ID     " +
+                                "  JOIN STOCKCURRENT as t5 on t5.PRODUCT = t4.ID           " +
+                                "   SET  t5.UNITS = t5.UNITS + (? * t3.INGREDIENT_WEIGHT)  " +
+                                " WHERE t1.LOCATION = ?                                    " +
+                                "   AND t1.PRODUCT = ?                                     " +
+                                "   AND t1.ATTRIBUTESETINSTANCE_ID IS NULL                 " +
+                                "   AND t2.ISCOMPLEX = TRUE                                "
+                            , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {6, 3, 4})).exec(params)
+                        : new PreparedSentence(s
+                            ,   "UPDATE STOCKCURRENT as t1                                 " +
+                                "  JOIN PRODUCTS     as t2 on t2.ID = t1.PRODUCT           " +
+                                "  JOIN RECIPES      as t3 on t3.PRODUCT_ID = t2.ID        " +
+                                "  JOIN PRODUCTS     as t4 on t4.ID = t3.INGREDIENT_ID     " +
+                                "  JOIN STOCKCURRENT as t5 on t5.PRODUCT = t4.ID           " +
+                                "   SET  t5.UNITS = t5.UNITS + (? * t3.INGREDIENT_WEIGHT)  " +
+                                " WHERE t1.LOCATION = ?                                    " +
+                                "   AND t1.PRODUCT = ?                                     " +
+                                "   AND t1.ATTRIBUTESETINSTANCE_ID = ?                     " +
+                                "   AND t2.ISCOMPLEX = TRUE                                "
+                            , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {6, 3, 4, 5})).exec(params);
+                // team2 - end
+
                 return new PreparedSentence(s
                     , "INSERT INTO STOCKDIARY (ID, DATENEW, REASON, LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS, PRICE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
                     , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {0, 1, 2, 3, 4, 5, 6, 7})).exec(params);
@@ -754,6 +1031,63 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS) VALUES (?, ?, ?, -(?))"
                         , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {3, 4, 5, 6})).exec(params);
                 }
+
+                // team2 - start
+                // получить ID всех ингредиентов
+                List<String> ingredientesId = new PreparedSentence(s
+                    ,"SELECT distinct                            " +
+                     "	     INGREDIENT_ID                       " +
+                     "  FROM RECIPES                             " +
+                     " WHERE PRODUCT_ID =  ?                     "
+                    , SerializerWriteString.INSTANCE
+                    , SerializerReadString.INSTANCE).list((String)((Object[]) params)[4]);
+
+                // проверить, есть ли по ним запись в STOCKCURRENT
+                if(!ingredientesId.isEmpty()){
+                    int countLine = 0;
+                    for (String productId : ingredientesId) {
+                        countLine = (Integer) new StaticSentence(s,
+                        "SELECT COUNT(*) FROM STOCKCURRENT WHERE PRODUCT = ?",
+                        SerializerWriteString.INSTANCE,
+                        SerializerReadInteger.INSTANCE).find(productId);
+
+                        // если записи нет, то вставить с нолем в продажах
+                        if(countLine == 0){
+                            new PreparedSentence(s
+                                , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS) VALUES (?, \"" + productId + "\", ?, 0)"
+                                , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {3,  5})).exec(params);
+                        }
+                        countLine = 0;
+                    }
+                }
+                // после этого сделать UPDATE по комплексному продукту
+                updateresult += ((Object[]) params)[5] == null // if ATTRIBUTESETINSTANCE_ID is null
+                        ? new PreparedSentence(s
+                            ,   "UPDATE STOCKCURRENT as t1                                 " +
+                                "  JOIN PRODUCTS     as t2 on t2.ID = t1.PRODUCT           " +
+                                "  JOIN RECIPES      as t3 on t3.PRODUCT_ID = t2.ID        " +
+                                "  JOIN PRODUCTS     as t4 on t4.ID = t3.INGREDIENT_ID     " +
+                                "  JOIN STOCKCURRENT as t5 on t5.PRODUCT = t4.ID           " +
+                                "   SET  t5.UNITS = t5.UNITS - (? * t3.INGREDIENT_WEIGHT)  " +
+                                " WHERE t1.LOCATION = ?                                    " +
+                                "   AND t1.PRODUCT = ?                                     " +
+                                "   AND t1.ATTRIBUTESETINSTANCE_ID IS NULL                 " +
+                                "   AND t2.ISCOMPLEX = TRUE                                "
+                            , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {6, 3, 4})).exec(params)
+                        : new PreparedSentence(s
+                            ,   "UPDATE STOCKCURRENT as t1                                 " +
+                                "  JOIN PRODUCTS     as t2 on t2.ID = t1.PRODUCT           " +
+                                "  JOIN RECIPES      as t3 on t3.PRODUCT_ID = t2.ID        " +
+                                "  JOIN PRODUCTS     as t4 on t4.ID = t3.INGREDIENT_ID     " +
+                                "  JOIN STOCKCURRENT as t5 on t5.PRODUCT = t4.ID           " +
+                                "   SET  t5.UNITS = t5.UNITS - (? * t3.INGREDIENT_WEIGHT)  " +
+                                " WHERE t1.LOCATION = ?                                    " +
+                                "   AND t1.PRODUCT = ?                                     " +
+                                "   AND t1.ATTRIBUTESETINSTANCE_ID = ?                     " +
+                                "   AND t2.ISCOMPLEX = TRUE                                "
+                            , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {6, 3, 4, 5})).exec(params);
+                // team2 - end
+
                 return new PreparedSentence(s
                     , "DELETE FROM STOCKDIARY WHERE ID = ?"
                     , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {0})).exec(params);

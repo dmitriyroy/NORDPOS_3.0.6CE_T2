@@ -68,17 +68,28 @@ public class ProductsWarehousePanel extends JPanelTableExt {
                 new Field("LOCATION", Datas.STRING, Formats.STRING),
                 new Field("STOCKSECURITY", Datas.DOUBLE, Formats.DOUBLE),
                 new Field("STOCKMAXIMUM", Datas.DOUBLE, Formats.DOUBLE),
-                new Field("UNITS", Datas.DOUBLE, Formats.DOUBLE)
+                new Field("UNITS", Datas.DOUBLE, Formats.DOUBLE),
+                new Field("ISCOMPLEX", Datas.BOOLEAN, Formats.BOOLEAN),
+                new Field("COMPLEX_GUANTITY", Datas.INT, Formats.INT)
         );
 
         lpr = new ListProviderCreator(new PreparedSentence(app.getSession(),
                 "SELECT L.ID, P.ID, P.REFERENCE, P.NAME," +
-                "L.STOCKSECURITY, L.STOCKMAXIMUM, COALESCE(S.SUMUNITS, 0) " +
+                "L.STOCKSECURITY, L.STOCKMAXIMUM, COALESCE(S.SUMUNITS, 0), P.ISCOMPLEX " +
+                ", ifnull(D.COMPLEX_GUANTITY,0)  " +
                 "FROM PRODUCTS P " +
                 "LEFT OUTER JOIN (SELECT ID, PRODUCT, LOCATION, STOCKSECURITY, STOCKMAXIMUM FROM STOCKLEVEL WHERE LOCATION = ?) L ON P.ID = L.PRODUCT " +
                 "LEFT OUTER JOIN (SELECT PRODUCT, SUM(UNITS) AS SUMUNITS FROM STOCKCURRENT WHERE LOCATION = ? GROUP BY PRODUCT) S ON P.ID = S.PRODUCT " +
+                "LEFT OUTER JOIN (" +  
+                " SELECT t1.ID,   " +
+                "        floor(min(ifnull(t2.UNITS,0) / ifnull(t3.INGREDIENT_WEIGHT,1)))  as \"COMPLEX_GUANTITY\"  " +
+                "   FROM PRODUCTS      as t1                                     " +
+                "   JOIN RECIPES       as t3 on t3.PRODUCT_ID = t1.ID            " +
+                "   JOIN stockcurrent  as t2 on t2.PRODUCT    = t3.INGREDIENT_ID " +
+                "  GROUP BY t1.ID                                                " +
+                " ) as D ON P.ID = D.ID " + 
                 "ORDER BY P.NAME",
-                new SerializerWriteBasicExt(new Datas[] {Datas.OBJECT, Datas.STRING}, new int[]{1, 1}),
+                new SerializerWriteBasicExt(new Datas[] {Datas.STRING, Datas.STRING}, new int[]{1, 1}),
                 new WarehouseSerializerRead()
                 ),
                 m_paramslocation);
@@ -103,11 +114,15 @@ public class ProductsWarehousePanel extends JPanelTableExt {
         };     
         
         spr = new SaveProvider(updatesent, null, null);
-         
-        jeditor = new ProductsWarehouseEditor(dirty);   
+
+        jeditor = new ProductsWarehouseEditor(dirty);
+//        try {
+//            jeditor.setCurrentComplexQuantity(getComplexQuantity(row.getDatas()[0].toString()));
+//        } catch (BasicException ex) {
+//            Logger.getLogger(ProductsWarehousePanel.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
-       
     @Override
     public Component getFilter() {
         return m_paramslocation.getComponent();
@@ -147,7 +162,9 @@ public class ProductsWarehousePanel extends JPanelTableExt {
                 ((Object[]) m_paramslocation.createValue())[1],
                 dr.getDouble(5),
                 dr.getDouble(6),
-                dr.getDouble(7)
+                dr.getDouble(7),
+                dr.getBoolean(8)
+                ,dr.getInt(9)
             };
         }
     }
