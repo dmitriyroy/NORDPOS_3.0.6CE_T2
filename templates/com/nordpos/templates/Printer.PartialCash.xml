@@ -21,7 +21,8 @@
 <output xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
    xsi:noNamespaceSchemaLocation="Schema.Printer.xsd">
     <ticket>
-        <image>Printer.Ticket.Logo</image>
+        <!--t2studio-->
+<!--        <image>Printer.Ticket.Logo</image>-->
         <line/>
         <line size="1">
             <text align ="center" length="42" bold="true">${local.getScriptString("report.partialcash.header")}</text>

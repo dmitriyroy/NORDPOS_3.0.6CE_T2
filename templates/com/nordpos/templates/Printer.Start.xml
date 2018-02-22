@@ -23,7 +23,8 @@
    xsi:noNamespaceSchemaLocation="Schema.Printer.xsd">
     <display animation="scroll">
         <line>
-            <text>NORD POS</text>
+        <!--t2studio-->
+            <!--<text>NORD POS</text>-->
         </line>
         <line>
             <text>${local.getScriptString("start.welcome")}</text>

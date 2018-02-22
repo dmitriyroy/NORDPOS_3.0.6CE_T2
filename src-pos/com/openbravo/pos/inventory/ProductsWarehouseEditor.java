@@ -26,6 +26,7 @@ import com.openbravo.data.user.DirtyManager;
 import com.openbravo.data.user.EditorRecord;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.util.T2FileLogger;
 
 /**
  *
@@ -45,85 +46,136 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         
         m_jMinimum.getDocument().addDocumentListener(dirty);
         m_jMaximum.getDocument().addDocumentListener(dirty);
+//        try{
+//            T2FileLogger.writeLog(this.getClass(), "Init : " + dirty);
+//        }catch(Exception e){
+//            T2FileLogger.writeLog(this.getClass(), "Exception : " + e);
+//        }
     }
     
     public void writeValueEOF() {
-        m_jTitle.setText(AppLocal.getIntString("label.recordeof"));
-        id = null;
-        prodid = null;
-        prodref = null;
-        prodname = null;
-        location = null;
-        m_jQuantity.setText(null);
-        m_jMinimum.setText(null);
-        m_jMaximum.setText(null);
-        m_jMinimum.setEnabled(false);
-        m_jMaximum.setEnabled(false);
+        try{
+            m_jTitle.setText(AppLocal.getIntString("label.recordeof"));
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueInsert", "m_jTitle : " + m_jTitle.getText());
+            id = null;
+            prodid = null;
+            prodref = null;
+            prodname = null;
+            location = null;
+            m_jQuantity.setText(null);
+            m_jMinimum.setText(null);
+            m_jMaximum.setText(null);
+            m_jMinimum.setEnabled(false);
+            m_jMaximum.setEnabled(false);
+        }catch(Exception e){
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEOF", "Exception : " + e);
+        }
     }
     public void writeValueInsert() {
-        m_jTitle.setText(AppLocal.getIntString("label.recordnew"));
-        id = null;
-        prodid = null;
-        prodref = null;
-        prodname = null;
-        location = null;
-        m_jQuantity.setText(null);
-        m_jMinimum.setText(null);
-        m_jMaximum.setText(null);
-        m_jMinimum.setEnabled(true);
-        m_jMaximum.setEnabled(true);
+        try{
+            m_jTitle.setText(AppLocal.getIntString("label.recordnew"));
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueInsert", "m_jTitle : " + m_jTitle.getText());
+            id = null;
+            prodid = null;
+            prodref = null;
+            prodname = null;
+            location = null;
+            m_jQuantity.setText(null);
+            m_jMinimum.setText(null);
+            m_jMaximum.setText(null);
+            m_jMinimum.setEnabled(true);
+            m_jMaximum.setEnabled(true);
+        }catch(Exception e){
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueInsert", "Exception : " + e);
+        }
     }
     public void writeValueEdit(Object value) {
-        Object[] myprod = (Object[]) value;
-        id = myprod[0];
-        prodid = myprod[1];
-        prodref = myprod[2];
-        prodname = myprod[3];
-        location = myprod[4];
-        m_jTitle.setText(Formats.STRING.formatValue(myprod[2]) + " - " + Formats.STRING.formatValue(myprod[3]));
-        // if Complex Product
-        // then quantity their ingredients
-        if(myprod[8] != null && (boolean)myprod[8]){
-            m_jQuantity.setText(Formats.INT.formatValue(myprod[9]));
-        }else{
-            m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));             
+        try{
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEdit", "Init : " + value);
+            Object[] myprod = (Object[]) value;
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEdit", "myprod.length : " + myprod.length);
+            for(Object prod:myprod){
+               T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEdit", "prod : " + prod); 
+            }
+            id = myprod[0];
+            prodid = myprod[1];
+            prodref = myprod[2];
+            prodname = myprod[3];
+            location = myprod[4];
+            m_jTitle.setText(Formats.STRING.formatValue(myprod[2]) + " - " + Formats.STRING.formatValue(myprod[3]));
+            // t2studio
+            // if Complex Product
+            // then quantity their ingredients
+            if(myprod.length > 8){
+                if(myprod[8] != null && (boolean)myprod[8]){
+                    m_jQuantity.setText(Formats.INT.formatValue(myprod[9]));
+                }else{
+                    m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));             
+                }
+            }else{
+                m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));                             
+            }
+            m_jMinimum.setText(Formats.DOUBLE.formatValue(myprod[5]));
+            m_jMaximum.setText(Formats.DOUBLE.formatValue(myprod[6]));
+            m_jMinimum.setEnabled(true);
+            m_jMaximum.setEnabled(true);
+        }catch(Exception e){
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEdit", "Exception : " + e);
         }
-        m_jMinimum.setText(Formats.DOUBLE.formatValue(myprod[5]));
-        m_jMaximum.setText(Formats.DOUBLE.formatValue(myprod[6]));
-        m_jMinimum.setEnabled(true);
-        m_jMaximum.setEnabled(true);
      }
     public void writeValueDelete(Object value) {
-        Object[] myprod = (Object[]) value;
-        id = myprod[0];
-        prodid = myprod[1];
-        prodref = myprod[2];
-        prodname = myprod[3];
-        location = myprod[4];
-        m_jTitle.setText(Formats.STRING.formatValue(myprod[2]) + " - " + Formats.STRING.formatValue(myprod[3]));
-        // if Complex Product
-        // then quantity their ingredients
-        if(myprod[8] != null && (boolean)myprod[8]){
-            m_jQuantity.setText(Formats.INT.formatValue(myprod[9]));
-        }else{
-            m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));             
+        try{
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueDelete", "Init : " + value);
+            Object[] myprod = (Object[]) value;
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueDelete", "myprod.length : " + myprod.length);
+            for(Object prod:myprod){
+               T2FileLogger.writeLog(this.getClass().getName() + ".writeValueDelete", "prod : " + prod); 
+            }
+            id = myprod[0];
+            prodid = myprod[1];
+            prodref = myprod[2];
+            prodname = myprod[3];
+            location = myprod[4];
+            m_jTitle.setText(Formats.STRING.formatValue(myprod[2]) + " - " + Formats.STRING.formatValue(myprod[3]));
+            // if Complex Product
+            // then quantity their ingredients
+            if(myprod[8] != null && (boolean)myprod[8]){
+                m_jQuantity.setText(Formats.INT.formatValue(myprod[9]));
+            }else{
+                m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));             
+            }
+            m_jMinimum.setText(Formats.DOUBLE.formatValue(myprod[5]));
+            m_jMaximum.setText(Formats.DOUBLE.formatValue(myprod[6]));
+            m_jMinimum.setEnabled(false);
+            m_jMaximum.setEnabled(false);
+        }catch(Exception e){
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueDelete", "Exception : " + e);
         }
-        m_jMinimum.setText(Formats.DOUBLE.formatValue(myprod[5]));
-        m_jMaximum.setText(Formats.DOUBLE.formatValue(myprod[6]));
-        m_jMinimum.setEnabled(false);
-        m_jMaximum.setEnabled(false);
     }
     public Object createValue() throws BasicException {
-        return new Object[] {
-            id,
-            prodid,
-            prodref,
-            prodname,
-            location,
-            Formats.DOUBLE.parseValue(m_jMinimum.getText()),
-            Formats.DOUBLE.parseValue(m_jMaximum.getText()),
-            Formats.DOUBLE.parseValue(m_jQuantity.getText())
-        };
+        try{
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "id : " + id);
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "prodid : " + prodid);
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "prodref : " + prodref);
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "prodname : " + prodname);
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "location : " + location);
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "m_jMinimum : " + m_jMinimum.getText());
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "m_jMaximum : " + m_jMaximum.getText());
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "m_jQuantity : " + m_jQuantity.getText());
+            return new Object[] {
+                id,
+                prodid,
+                prodref,
+                prodname,
+                location,
+                Formats.DOUBLE.parseValue(m_jMinimum.getText()),
+                Formats.DOUBLE.parseValue(m_jMaximum.getText()),
+                Formats.DOUBLE.parseValue(m_jQuantity.getText())
+            };
+        }catch(Exception e){
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "Exception : " + e);
+        }
+        return null;
     }
     
     public Component getComponent() {

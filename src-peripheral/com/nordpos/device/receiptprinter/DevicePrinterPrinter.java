@@ -27,6 +27,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import com.openbravo.pos.util.ReportUtils;
 import com.openbravo.pos.util.SelectPrinter;
+import com.openbravo.pos.util.T2FileLogger;
 import java.awt.Component;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -73,18 +74,18 @@ public class DevicePrinterPrinter implements DevicePrinter {
 //    private static final int imageable_y = 287;
 //    private static final Media media = MediaSizeName.ISO_A4;
 
-//    // For Page Size A4 && MediaSizeName A4.
-//    private static final int imageable_width = 451;
-//    private static final int imageable_height = 698;
-//    private static final int imageable_x = 72;
-//    private static final int imageable_y = 72;
-//    private static final Media media = MediaSizeName.ISO_A4;
+    // For Page Size A4 && MediaSizeName A4.
+    private static final int imageable_width = 451;
+    private static final int imageable_height = 698;
+    private static final int imageable_x = 10; //72; //
+    private static final int imageable_y = 10; //72;
+    private static final Media media = MediaSizeName.ISO_A4;
 
-    private int imageable_width;
-    private int imageable_height;
-    private int imageable_x;
-    private int imageable_y;
-    private Media media;
+//    private int imageable_width;
+//    private int imageable_height;
+//    private int imageable_x;
+//    private int imageable_y;
+//    private Media media;
 
     private static final HashMap<String, MediaSizeName> mediasizenamemap = new HashMap<String, MediaSizeName>();
 
@@ -96,16 +97,18 @@ public class DevicePrinterPrinter implements DevicePrinter {
      */
     public DevicePrinterPrinter(Component parent, String printername, int imageable_x, int imageable_y, int imageable_width, int imageable_height, String mediasizename) {
 
+               
         this.parent = parent;
         m_sName = "label.ReceiptPrinterPrinter";
         m_ticketcurrent = null;
         printservice = ReportUtils.getPrintService(printername);
 
-        this.imageable_x = imageable_x;
-        this.imageable_y = imageable_y;
-        this.imageable_width = imageable_width;
-        this.imageable_height = imageable_height;
-        this.media = getMedia(mediasizename);
+//        this.imageable_x = imageable_x;
+//        this.imageable_y = imageable_y;
+//        this.imageable_width = imageable_width;
+//        this.imageable_height = imageable_height;
+//        this.media = getMedia(mediasizename);
+
     }
 
     /**

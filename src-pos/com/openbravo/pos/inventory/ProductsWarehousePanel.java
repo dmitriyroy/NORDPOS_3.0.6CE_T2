@@ -39,6 +39,7 @@ import com.openbravo.format.Formats;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.panels.JPanelTableExt;
 import com.openbravo.pos.reports.JParamsLocation;
+import com.openbravo.pos.util.T2FileLogger;
 import java.util.UUID;
 
 /**

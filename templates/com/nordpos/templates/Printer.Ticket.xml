@@ -45,9 +45,10 @@
      #end
     #end
     <ticket>
-        <image>Printer.Ticket.Logo</image>
-        <line></line>
-        <line>
+        <!--<image>Printer.Ticket.Logo</image>-->
+        <!--<line></line>-->
+        <!--t2studio-->
+<!--        <line>
             <text align="center" length="42">NORD POS</text>
         </line>
         <line>
@@ -55,7 +56,7 @@
         </line>
         <line>
             <text align="center" length="42">${local.getScriptString("sale.header.3")}</text>
-        </line>
+        </line>-->
         <line></line>
         #if (${ticket.ticketType} == 0)
         <line>

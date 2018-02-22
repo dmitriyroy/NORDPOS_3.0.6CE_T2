@@ -35,9 +35,10 @@
         </line>
     </display>-->
     <ticket>
-        <image>Printer.Ticket.Logo</image>
-        <line></line>
-        <line>
+        <!--t2studio-->
+        <!--<image align="left">Printer.Ticket.Logo</image>-->
+        <!--<line></line>-->
+<!--        <line>
             <text align="center" length="42">NORD POS</text>
         </line>
         <line>
@@ -45,7 +46,7 @@
         </line>
         <line>
             <text align="center" length="42">${local.getScriptString("sale.header.3")}</text>
-        </line>
+        </line>-->
         <line></line>
         #if (${ticket.ticketType} == 0)
         <line>
@@ -245,6 +246,7 @@
         <line>
             <text align="center" length="42">${local.getScriptString("label.thankyouvisit")}</text>
         </line>
-        <barcode type="QRCODE">http://nordpos.mobi</barcode>        
+        <!--t2studio-->
+        <!--<barcode type="QRCODE">http://nordpos.mobi</barcode>-->        
     </ticket>
 </output>
