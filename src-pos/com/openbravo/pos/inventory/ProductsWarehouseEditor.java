@@ -46,17 +46,11 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
         
         m_jMinimum.getDocument().addDocumentListener(dirty);
         m_jMaximum.getDocument().addDocumentListener(dirty);
-//        try{
-//            T2FileLogger.writeLog(this.getClass(), "Init : " + dirty);
-//        }catch(Exception e){
-//            T2FileLogger.writeLog(this.getClass(), "Exception : " + e);
-//        }
     }
     
     public void writeValueEOF() {
         try{
             m_jTitle.setText(AppLocal.getIntString("label.recordeof"));
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueInsert", "m_jTitle : " + m_jTitle.getText());
             id = null;
             prodid = null;
             prodref = null;
@@ -68,13 +62,12 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
             m_jMinimum.setEnabled(false);
             m_jMaximum.setEnabled(false);
         }catch(Exception e){
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEOF", "Exception : " + e);
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEOF", e.getMessage());
         }
     }
     public void writeValueInsert() {
         try{
             m_jTitle.setText(AppLocal.getIntString("label.recordnew"));
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueInsert", "m_jTitle : " + m_jTitle.getText());
             id = null;
             prodid = null;
             prodref = null;
@@ -86,17 +79,12 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
             m_jMinimum.setEnabled(true);
             m_jMaximum.setEnabled(true);
         }catch(Exception e){
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueInsert", "Exception : " + e);
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueInsert", e.getMessage());
         }
     }
     public void writeValueEdit(Object value) {
         try{
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEdit", "Init : " + value);
             Object[] myprod = (Object[]) value;
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEdit", "myprod.length : " + myprod.length);
-            for(Object prod:myprod){
-               T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEdit", "prod : " + prod); 
-            }
             id = myprod[0];
             prodid = myprod[1];
             prodref = myprod[2];
@@ -120,48 +108,40 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
             m_jMinimum.setEnabled(true);
             m_jMaximum.setEnabled(true);
         }catch(Exception e){
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEdit", "Exception : " + e);
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueEdit", e.getMessage());
         }
      }
     public void writeValueDelete(Object value) {
         try{
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueDelete", "Init : " + value);
             Object[] myprod = (Object[]) value;
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueDelete", "myprod.length : " + myprod.length);
-            for(Object prod:myprod){
-               T2FileLogger.writeLog(this.getClass().getName() + ".writeValueDelete", "prod : " + prod); 
-            }
             id = myprod[0];
             prodid = myprod[1];
             prodref = myprod[2];
             prodname = myprod[3];
             location = myprod[4];
             m_jTitle.setText(Formats.STRING.formatValue(myprod[2]) + " - " + Formats.STRING.formatValue(myprod[3]));
+            // t2studio
             // if Complex Product
             // then quantity their ingredients
-            if(myprod[8] != null && (boolean)myprod[8]){
-                m_jQuantity.setText(Formats.INT.formatValue(myprod[9]));
+            if(myprod.length > 8){
+                if(myprod[8] != null && (boolean)myprod[8]){
+                    m_jQuantity.setText(Formats.INT.formatValue(myprod[9]));
+                }else{
+                    m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));             
+                }
             }else{
-                m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));             
+                m_jQuantity.setText(Formats.DOUBLE.formatValue(myprod[7]));                             
             }
             m_jMinimum.setText(Formats.DOUBLE.formatValue(myprod[5]));
             m_jMaximum.setText(Formats.DOUBLE.formatValue(myprod[6]));
             m_jMinimum.setEnabled(false);
             m_jMaximum.setEnabled(false);
         }catch(Exception e){
-            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueDelete", "Exception : " + e);
+            T2FileLogger.writeLog(this.getClass().getName() + ".writeValueDelete", e.getMessage());
         }
     }
     public Object createValue() throws BasicException {
         try{
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "id : " + id);
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "prodid : " + prodid);
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "prodref : " + prodref);
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "prodname : " + prodname);
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "location : " + location);
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "m_jMinimum : " + m_jMinimum.getText());
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "m_jMaximum : " + m_jMaximum.getText());
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "m_jQuantity : " + m_jQuantity.getText());
             return new Object[] {
                 id,
                 prodid,
@@ -173,7 +153,7 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
                 Formats.DOUBLE.parseValue(m_jQuantity.getText())
             };
         }catch(Exception e){
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", "Exception : " + e);
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", e.getMessage());
         }
         return null;
     }
