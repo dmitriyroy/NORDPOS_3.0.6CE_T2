@@ -153,7 +153,7 @@ public class ProductsWarehouseEditor extends javax.swing.JPanel implements Edito
                 Formats.DOUBLE.parseValue(m_jQuantity.getText())
             };
         }catch(Exception e){
-            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", e.getMessage()getMessage);
+            T2FileLogger.writeLog(this.getClass().getName() + ".createValue", e.getMessage());
         }
         return null;
     }
