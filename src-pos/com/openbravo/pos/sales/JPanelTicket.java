@@ -194,9 +194,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_jDiscountRatePanel.setVisible(false);
         }
 
-        m_dDiscountRate1 = Double.parseDouble(panelconfig.getProperty("discountrate-1", "5")) / 100;
-        m_dDiscountRate2 = Double.parseDouble(panelconfig.getProperty("discountrate-2", "10")) / 100;
-        m_dDiscountRate3 = Double.parseDouble(panelconfig.getProperty("discountrate-3", "15")) / 100;
+        m_dDiscountRate1 = Double.parseDouble(panelconfig.getProperty("discountrate-1", "10")) / 100;
+        m_dDiscountRate2 = Double.parseDouble(panelconfig.getProperty("discountrate-2", "20")) / 100;
+//        m_dDiscountRate1 = Double.parseDouble(panelconfig.getProperty("discountrate-1", "5")) / 100;
+//        m_dDiscountRate2 = Double.parseDouble(panelconfig.getProperty("discountrate-2", "10")) / 100;
+//        m_dDiscountRate3 = Double.parseDouble(panelconfig.getProperty("discountrate-3", "15")) / 100;
 
         bTypeDiscountMoney = true;
 
@@ -291,7 +293,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Permissões para desconto
         m_jDiscount1.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
         m_jDiscount2.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
-        m_jDiscount3.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
+//        m_jDiscount3.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
         m_jKeypadDiscountRate.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.DiscountMulti"));
         //m_jbtnDiscount.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount") || m_App.getAppUserView().getUser().hasPermission("sales.DiscountMulti"));
 
@@ -301,9 +303,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jDiscount3.setText(Formats.PERCENT.formatValue(m_dDiscountRate3));
         m_jDisableDiscountRate.setText(Formats.PERCENT.formatValue(0.0));
 
-        m_jDiscount4.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
-        m_jDiscount5.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
-        m_jDiscount6.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
+//        m_jDiscount4.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
+//        m_jDiscount5.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
+//        m_jDiscount6.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Discount"));
         m_jKeypadDiscountMoney.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.DiscountMulti"));
 
         m_jDiscount4.setText(Formats.CURRENCY.formatValue(m_dDiscountMoney1));
@@ -311,6 +313,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jDiscount6.setText(Formats.CURRENCY.formatValue(m_dDiscountMoney3));
         m_jDisableDiscountMoney.setText(Formats.CURRENCY.formatValue(0.0));
 
+        m_jDiscount3.setVisible(false);
+        
         m_ticketsbag.activate();
     }
 
